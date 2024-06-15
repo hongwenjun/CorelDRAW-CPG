@@ -6,7 +6,7 @@ CorelDRAW CPG 扩展开发: CPG(Corel Plug-in Gallery)是 CorelDRAW 的一个扩
 
 
 
-## CorelDRAW Graphics Suite 2020  Programs64\TypeLibs
+## CorelDRAW Graphics Suite 2020  Programs64 TypeLibs
 
 - 学习编写CPG插件，一般只用到  [`VGCoreAuto.tlb`](./TypeLibs/VGCoreAuto.tlb) 这个文件就够
 - 类型库 `vgcoreauto.tlb` 的包装器实现: [`vgcoreauto.tlh`  `vgcoreauto.tli`](./VGCoreAuto/) 这两个文件可以查看类型库的接口定义
@@ -26,8 +26,13 @@ Path=C:\MSVC2022\bin;%PATH%
 ```
 
 ## 构建: `Release` 在 `lycpg64` 中 (编译器: Microsoft Visual C++ 2022)
-```
-cl.exe /utf-8 /nologo /W3 /EHsc /Ox /DNDEBUG /IC:\MSVC2022\include /ID:\lycpg64 /c main.cpp /Foobj\Release\main.obj
 
-link.exe /dll /nologo /LIBPATH:C:\MSVC2022\lib /out:bin\Release\lycpg64.dll Gdi32.lib user32.lib Kernel32.lib obj\Release\main.obj
 ```
+cl.exe /nologo /W3 /EHsc /Ox /DNDEBUG /IC:\MSVC2022\include /ITypeLibs  /c 01_lycpg64\main.cpp /Fo.\main.obj
+
+link.exe /dll /nologo /LIBPATH:C:\MSVC2022\lib /out:lycpg64.dll Gdi32.lib user32.lib Kernel32.lib .\main.obj
+```
+
+### 构建 `lycpg64.dll` CPG插件, 编译示例图，改名成 `lycpg64.cpg` ，然后复制到 `CorelDRAW\Draw\Plugins64` 目录
+
+![](./img/CPG_Build.png) 
