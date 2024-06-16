@@ -36,3 +36,32 @@ link.exe /dll /nologo /LIBPATH:C:\MSVC2022\lib /out:lycpg64.dll Gdi32.lib user32
 ### 构建 `lycpg64.dll` CPG插件, 编译示例图，改名成 `lycpg64.cpg` ，然后复制到 `CorelDRAW\Draw\Plugins64` 目录
 
 ![](./img/CPG_Build.png) 
+
+
+## 感谢 fersatgit  学习项目 `03_ClearFill` 修复CorelDRAW 2020 使用错误
+- 答疑解惑网址: https://github.com/fersatgit/SmartDepart/issues/1 
+![](./img/03_ClearFill.gif) 
+```
+STDMETHODIMP CVGAppPlugin::raw_StartSession()
+{
+  try
+  {
+    m_pApp->AddPluginCommand(_bstr_t("ClearFill"), _bstr_t("Clear Fill"), _bstr_t("Clears fill from selected objects"));
+
+    // CorelDRAW X6 使用 VGCore::CommandBarControlPtr ctl
+    // CorelDRAW 2020 SDK 使用  VGCore::ICUIControlPtr ctl
+
+    // https://github.com/fersatgit/SmartDepart/issues/1    // 感谢 fersatgit 修复CorelDRAW 2020 使用错误
+    VGCore::ICUIControlPtr ctl = m_pApp->CommandBars->Item[_bstr_t("Standard")]->Controls->AddCustomButton(VGCore::cdrCmdCategoryPlugins, _bstr_t("ClearFill"), 1, VARIANT_FALSE);
+//  _bstr_t bstrPath(m_pApp->Path + _bstr_t("Plugins64\\ClearFill.bmp"));
+    ctl->SetIcon2(_bstr_t("guid://d2fdc0d9-09f8-4948-944c-4297395c05b7"));
+
+    m_lCookie = m_pApp->AdviseEvents(this);
+  }
+  catch(_com_error &e)
+  {
+    MessageBox(NULL, e.Description(), _T("Error"), MB_ICONSTOP);
+  }
+  return S_OK;
+}
+```
