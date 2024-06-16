@@ -170,10 +170,13 @@ STDMETHODIMP CVGAppPlugin::raw_StartSession()
     m_pApp->AddPluginCommand(_bstr_t("ClearFill"), _bstr_t("Clear Fill"), _bstr_t("Clears fill from selected objects"));
 
     // CorelDRAW X6 使用 VGCore::CommandBarControlPtr ctl
-    // CorelDRAW 2020 使用  VGCore::ICUIControlPtr ctl，能通过编译，不过运行目前有错误
-    VGCore::ICUIControlPtr ctl = m_pApp->CommandBars->Item[_bstr_t("CorelVBA")]->Controls->AddCustomButton(VGCore::cdrCmdCategoryPlugins, _bstr_t("ClearFill"), 0, VARIANT_TRUE);
-//    _bstr_t bstrPath(m_pApp->Path + _bstr_t("Plugins64\\ClearFill.bmp"));
+    // CorelDRAW 2020 SDK 使用  VGCore::ICUIControlPtr ctl
+
+    // https://github.com/fersatgit/SmartDepart/issues/1    // 感谢 fersatgit 修复CorelDRAW 2020 使用错误
+    VGCore::ICUIControlPtr ctl = m_pApp->CommandBars->Item[_bstr_t("Standard")]->Controls->AddCustomButton(VGCore::cdrCmdCategoryPlugins, _bstr_t("ClearFill"), 1, VARIANT_FALSE);
+//  _bstr_t bstrPath(m_pApp->Path + _bstr_t("Plugins64\\ClearFill.bmp"));
     ctl->SetIcon2(_bstr_t("guid://d2fdc0d9-09f8-4948-944c-4297395c05b7"));
+
     m_lCookie = m_pApp->AdviseEvents(this);
   }
   catch(_com_error &e)

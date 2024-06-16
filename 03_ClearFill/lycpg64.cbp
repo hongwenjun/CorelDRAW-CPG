@@ -16,6 +16,7 @@
 				<Compiler>
 					<Add option="/Zi" />
 					<Add option="/D_DEBUG" />
+					<Add directory="../TypeLibs" />
 				</Compiler>
 				<Linker>
 					<Add option="/debug" />
