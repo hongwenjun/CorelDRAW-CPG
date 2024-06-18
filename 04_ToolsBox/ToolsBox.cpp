@@ -2,13 +2,11 @@
 #include "resource.h"
 
 #import "VGCoreAuto.tlb" \
-            rename("GetCommandLine", "VGGetCommandLine") \
-            rename("CopyFile", "VGCore") \
-            rename("FindWindow", "VGFindWindow")
-
+rename("GetCommandLine", "VGGetCommandLine") \
+rename("CopyFile", "VGCore") \
+rename("FindWindow", "VGFindWindow")
 
 static HINSTANCE g_hResource = NULL;
-
 
 BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
@@ -31,11 +29,11 @@ private:
 
 public:
     ToolsBoxPlugin();
-    VGCore::IVGApplication *m_pApp;
+    VGCore::IVGApplication* m_pApp;
 
 // IUnknown
 public:
-    STDMETHOD(QueryInterface)(REFIID riid, void **ppvObject);
+    STDMETHOD(QueryInterface)(REFIID riid, void** ppvObject);
     STDMETHOD_(ULONG, AddRef)(void) { return ++m_ulRefCount; }
     STDMETHOD_(ULONG, Release)(void)
     {
@@ -48,14 +46,14 @@ public:
 
 // IDispatch
 public:
-    STDMETHOD(GetTypeInfoCount)(UINT *pctinfo) { return E_NOTIMPL; }
-    STDMETHOD(GetTypeInfo)(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo) { return E_NOTIMPL; }
-    STDMETHOD(GetIDsOfNames)(REFIID riid, LPOLESTR *rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId) { return E_NOTIMPL; }
-    STDMETHOD(Invoke)(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr);
+    STDMETHOD(GetTypeInfoCount)(UINT* pctinfo) { return E_NOTIMPL; }
+    STDMETHOD(GetTypeInfo)(UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo) { return E_NOTIMPL; }
+    STDMETHOD(GetIDsOfNames)(REFIID riid, LPOLESTR* rgszNames, UINT cNames, LCID lcid, DISPID* rgDispId) { return E_NOTIMPL; }
+    STDMETHOD(Invoke)(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr);
 
 // IVGAppPlugin
 public:
-    STDMETHOD(raw_OnLoad)(VGCore::IVGApplication *Application);
+    STDMETHOD(raw_OnLoad)(VGCore::IVGApplication* Application);
     STDMETHOD(raw_StartSession)();
     STDMETHOD(raw_StopSession)();
     STDMETHOD(raw_OnUnload)();
@@ -69,16 +67,16 @@ ToolsBoxPlugin::ToolsBoxPlugin()
     m_ulRefCount = 1;
 }
 
-STDMETHODIMP ToolsBoxPlugin::QueryInterface(REFIID riid, void **ppvObject)
+STDMETHODIMP ToolsBoxPlugin::QueryInterface(REFIID riid, void** ppvObject)
 {
     HRESULT hr = S_OK;
     m_ulRefCount++;
     if (riid == IID_IUnknown) {
-        *ppvObject = (IUnknown *)this;
+        *ppvObject = (IUnknown*)this;
     } else if (riid == IID_IDispatch) {
-        *ppvObject = (IDispatch *)this;
+        *ppvObject = (IDispatch*)this;
     } else if (riid == __uuidof(VGCore::IVGAppPlugin)) {
-        *ppvObject = (VGCore::IVGAppPlugin *)this;
+        *ppvObject = (VGCore::IVGAppPlugin*)this;
     } else {
         m_ulRefCount--;
         hr = E_NOINTERFACE;
@@ -86,7 +84,7 @@ STDMETHODIMP ToolsBoxPlugin::QueryInterface(REFIID riid, void **ppvObject)
     return hr;
 }
 
-STDMETHODIMP ToolsBoxPlugin::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
+STDMETHODIMP ToolsBoxPlugin::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr)
 {
     switch (dispIdMember) {
 
@@ -94,7 +92,7 @@ STDMETHODIMP ToolsBoxPlugin::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,
         if (pDispParams != NULL && pDispParams->cArgs == 1) {
             _bstr_t strCmd(pDispParams->rgvarg[0].bstrVal);
             if (strCmd == _bstr_t("OpenToolsBox")) {
-                //   MessageBox(NULL, _bstr_t("OpenToolsBox"), _bstr_t("OpenToolsBox"), MB_ICONSTOP);
+          //   MessageBox(NULL, _bstr_t("OpenToolsBox"), _bstr_t("OpenToolsBox"), MB_ICONSTOP);
                 OpenToolsBox();
             }
         }
@@ -112,7 +110,7 @@ STDMETHODIMP ToolsBoxPlugin::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,
     return S_OK;
 }
 
-STDMETHODIMP ToolsBoxPlugin::raw_OnLoad(VGCore::IVGApplication *Application)
+STDMETHODIMP ToolsBoxPlugin::raw_OnLoad(VGCore::IVGApplication* Application)
 {
     m_pApp = Application;
     if (m_pApp) {
@@ -158,7 +156,7 @@ STDMETHODIMP ToolsBoxPlugin::raw_OnUnload()
 
 void ToolsBoxPlugin::OpenToolsBox()
 {
-// MessageBox(NULL, _bstr_t("打开工具箱"), _bstr_t("打开工具箱"), MB_ICONSTOP);
+    // MessageBox(NULL, _bstr_t("打开工具箱"), _bstr_t("打开工具箱"), MB_ICONSTOP);
     try {
         m_pApp->StartupMode = VGCore::cdrStartupDoNothing;
         // To avoid 64 bit portability warning, store the long handle value into an INT_PTR
@@ -167,6 +165,7 @@ void ToolsBoxPlugin::OpenToolsBox()
         INT_PTR nHandle = m_pApp->AppWindow->Handle;
         HWND hAppWnd = reinterpret_cast<HWND>(nHandle);
         INT_PTR nRet = DialogBoxParam(g_hResource, MAKEINTRESOURCE(IDD_TOOLS_BOX), hAppWnd, DlgProc, (LPARAM)this);
+
         switch (nRet) {
         case IDC_NEWDOC:
             m_pApp->CreateDocument();
@@ -185,10 +184,10 @@ void ToolsBoxPlugin::OpenToolsBox()
             break;
 
         case IDC_SR_FLIP: {
-                // m_pApp->ActiveSelection->Fill->ApplyNoFill();
                 auto sr = m_pApp->ActiveSelectionRange;
-                for (auto i = 0;   i != sr->Count; i++)
-                    sr[i].Flip(VGCore::cdrFlipHorizontal);
+                for (auto i = 0; i != sr->Count; i++)
+                    // CorelDRAW Shapes 物件 Item 编号从1开始
+                    sr->Shapes->Item[i+1]->Flip(VGCore::cdrFlipHorizontal);
             }
             break;
 
@@ -230,7 +229,7 @@ INT_PTR CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
     return 0;
 }
 
-extern "C" __declspec(dllexport) DWORD APIENTRY AttachPlugin(VGCore::IVGAppPlugin **ppIPlugin)
+extern "C" __declspec(dllexport) DWORD APIENTRY AttachPlugin(VGCore::IVGAppPlugin** ppIPlugin)
 {
     *ppIPlugin = new ToolsBoxPlugin;
     return 0x100;
