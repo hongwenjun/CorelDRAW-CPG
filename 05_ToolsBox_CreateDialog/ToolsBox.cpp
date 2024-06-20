@@ -1,10 +1,13 @@
-﻿#include <windows.h>
+﻿#include <cstdio>
+#include <windows.h>
 #include "resource.h"
 
 #import "VGCoreAuto.tlb" \
 rename("GetCommandLine", "VGGetCommandLine") \
 rename("CopyFile", "VGCore") \
 rename("FindWindow", "VGFindWindow")
+
+using namespace VGCore;
 
 static HINSTANCE g_hResource = NULL;
 
@@ -199,17 +202,31 @@ INT_PTR CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
         try {
             switch (LOWORD(wParam)) {
             case IDC_NEWDOC:
-                cdr->CreateDocument();
-                EndDialog(hDlg, IDC_NEWDOC);
+                {
+                // sr.ApplyUniformFill CreateCMYKColor(0, 100, 100, 0)
+                auto sr = cdr->ActiveSelectionRange;
+                auto red = cdr->CreateCMYKColor(0, 100, 100, 0);
+                sr->ApplyUniformFill(red);
+                }
+
                 break;
 
             case IDC_LASTDOC:
-                if (cdr->RecentFiles->Count > 0) {
-                    cdr->OpenDocument(cdr->RecentFiles->Item[1]->FullName, 0);
-                } else {
-                    MessageBox(NULL, "No documents were editied yet.", "Error", MB_ICONSTOP);
+                {
+                auto red = cdr->CreateCMYKColor(0, 100, 100, 0);
+                red->ConvertToRGB();
+                auto r = red->RGBRed;
+                auto g = red->RGBGreen;
+                auto b = red->RGBBlue;
+
+                char buf[256] = { 0 };
+                sprintf(buf, "@Outline.Color.rgb[.r='%d' And .g='%d' And .b='%d']" , r, g, b );
+                auto cql = _bstr_t(buf);
+               // MessageBox(NULL, cql, "cql 红色轮廓", MB_ICONSTOP);
+                auto sr = cdr->ActivePage->Shapes->FindShapes(_bstr_t(),cdrNoShape,VARIANT_TRUE, cql);
+                sr->CreateSelection();
                 }
-                EndDialog(hDlg, IDC_LASTDOC);
+
                 break;
 
             case IDC_CLEAR_FILL:
