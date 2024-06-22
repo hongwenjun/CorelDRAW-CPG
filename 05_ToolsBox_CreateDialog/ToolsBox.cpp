@@ -95,7 +95,7 @@ STDMETHODIMP ToolsBoxPlugin::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,
         if (pDispParams != NULL && pDispParams->cArgs == 1) {
             _bstr_t strCmd(pDispParams->rgvarg[0].bstrVal);
             if (strCmd == _bstr_t("OpenToolsBox")) {
-                //   MessageBox(NULL, _bstr_t("OpenToolsBox"), _bstr_t("OpenToolsBox"), MB_ICONSTOP);
+           //   MessageBox(NULL, _bstr_t("OpenToolsBox"), _bstr_t("OpenToolsBox"), MB_ICONSTOP);
                 OpenToolsBox();
             }
         }
@@ -158,38 +158,38 @@ STDMETHODIMP ToolsBoxPlugin::raw_OnUnload()
 
 void ToolsBoxPlugin::OpenToolsBox()
 {
-        m_pApp->StartupMode = VGCore::cdrStartupDoNothing;
+    m_pApp->StartupMode = VGCore::cdrStartupDoNothing;
 
-        INT_PTR nHandle = m_pApp->AppWindow->Handle;
-        HWND hAppWnd = reinterpret_cast<HWND>(nHandle);
+    INT_PTR nHandle = m_pApp->AppWindow->Handle;
+    HWND hAppWnd = reinterpret_cast<HWND>(nHandle);
 
-        // 创建非模态对话框
-        HWND hDlgWnd = CreateDialogParam(g_hResource, MAKEINTRESOURCE(IDD_TOOLS_BOX), hAppWnd, DlgProc, (LPARAM)m_pApp);
-        // 在创建对话框之前存储 m_pApp 指针
-        SetWindowLongPtr(hDlgWnd, DWLP_USER, (LONG_PTR)m_pApp);
+    // 创建非模态对话框
+    HWND hDlgWnd = CreateDialogParam(g_hResource, MAKEINTRESOURCE(IDD_TOOLS_BOX), hAppWnd, DlgProc, (LPARAM)m_pApp);
+    // 在创建对话框之前存储 m_pApp 指针
+    SetWindowLongPtr(hDlgWnd, DWLP_USER, (LONG_PTR)m_pApp);
 
-        // 获取屏幕的宽度和高度
-        RECT rect;
-        GetWindowRect(GetDesktopWindow(), &rect);
-        int screenWidth = rect.right - rect.left;
-        int screenHeight = rect.bottom - rect.top;
+    // 获取屏幕的宽度和高度
+    RECT rect;
+    GetWindowRect(GetDesktopWindow(), &rect);
+    int screenWidth = rect.right - rect.left;
+    int screenHeight = rect.bottom - rect.top;
 
-        // 计算对话框窗口的宽度和高度
-        RECT dlgRect;
-        GetWindowRect(hDlgWnd, &dlgRect);
-        int dlgWidth = dlgRect.right - dlgRect.left;
-        int dlgHeight = dlgRect.bottom - dlgRect.top;
+    // 计算对话框窗口的宽度和高度
+    RECT dlgRect;
+    GetWindowRect(hDlgWnd, &dlgRect);
+    int dlgWidth = dlgRect.right - dlgRect.left;
+    int dlgHeight = dlgRect.bottom - dlgRect.top;
 
-        // 计算对话框窗口的左上角坐标,使其居中显示
-        int x = (screenWidth - dlgWidth) / 2;
-        int y = (screenHeight - dlgHeight) / 2;
+    // 计算对话框窗口的左上角坐标,使其居中显示
+    int x = (screenWidth - dlgWidth) / 2;
+    int y = (screenHeight - dlgHeight) / 2;
 
-        // 设置对话框窗口的位置
-        SetWindowPos(hDlgWnd, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-        // 设置对话框窗口的父窗口  // #define GWL_HWNDPARENT      (-8)
-        SetWindowLong(hDlgWnd, -8, (LONG)hAppWnd);
-        // 显示对话框窗口
-        ShowWindow(hDlgWnd, SW_SHOW);
+    // 设置对话框窗口的位置
+    SetWindowPos(hDlgWnd, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+    // 设置对话框窗口的父窗口  // #define GWL_HWNDPARENT      (-8)
+    SetWindowLong(hDlgWnd, -8, (LONG)hAppWnd);
+    // 显示对话框窗口
+    ShowWindow(hDlgWnd, SW_SHOW);
 }
 
 
@@ -201,44 +201,89 @@ INT_PTR CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
     if (uMsg == WM_COMMAND) {
         try {
             switch (LOWORD(wParam)) {
-            case IDC_NEWDOC:
-                {
-                // sr.ApplyUniformFill CreateCMYKColor(0, 100, 100, 0)
-                auto sr = cdr->ActiveSelectionRange;
-                auto red = cdr->CreateCMYKColor(0, 100, 100, 0);
-                sr->ApplyUniformFill(red);
+            case IDC_RED : {
+                    // sr.ApplyUniformFill CreateCMYKColor(0, 100, 100, 0)
+                    auto sr = cdr->ActiveSelectionRange;
+                    auto red = cdr->CreateCMYKColor(0, 100, 100, 0);
+                    sr->ApplyUniformFill(red);
+                    MessageBox(NULL, "选择物件填充红色", "填充颜色测试", MB_ICONSTOP);
                 }
 
                 break;
 
-            case IDC_LASTDOC:
-                {
-                auto red = cdr->CreateCMYKColor(0, 100, 100, 0);
-                red->ConvertToRGB();
-                auto r = red->RGBRed;
-                auto g = red->RGBGreen;
-                auto b = red->RGBBlue;
+            case IDC_CQL_OUTLINE: {
+                    auto col = cdr->CreateCMYKColor(0, 100, 100, 0);
+                    auto s = cdr->ActiveShape;
+                    col-> CopyAssign (s->Outline->Color);
+                    col->ConvertToRGB();
 
-                char buf[256] = { 0 };
-                sprintf(buf, "@Outline.Color.rgb[.r='%d' And .g='%d' And .b='%d']" , r, g, b );
-                auto cql = _bstr_t(buf);
-               // MessageBox(NULL, cql, "cql 红色轮廓", MB_ICONSTOP);
-                auto sr = cdr->ActivePage->Shapes->FindShapes(_bstr_t(),cdrNoShape,VARIANT_TRUE, cql);
-                sr->CreateSelection();
+                    auto r = col->RGBRed;
+                    auto g = col->RGBGreen;
+                    auto b = col->RGBBlue;
+
+                    char buf[256] = { 0 };
+                    sprintf(buf, "@Outline.Color.rgb[.r='%d' And .g='%d' And .b='%d']", r, g, b);
+                    auto cql = _bstr_t(buf);
+                    // MessageBox(NULL, cql, "cql 轮廓颜色", MB_ICONSTOP);
+                    auto sr = cdr->ActivePage->Shapes->FindShapes(_bstr_t(), cdrNoShape, VARIANT_TRUE, cql);
+                    sr->CreateSelection();
                 }
 
+                // 将焦点返回到父窗口 关闭对话框窗口
+                SetFocus(GetParent(hDlg));
+                break;
+
+            case IDC_CQL_FILL: {
+                    auto col = cdr->CreateCMYKColor(0, 100, 100, 0);
+                    auto s = cdr->ActiveShape;
+                    col-> CopyAssign (s->Fill->UniformColor);
+                    col->ConvertToRGB();
+
+                    auto r = col->RGBRed;
+                    auto g = col->RGBGreen;
+                    auto b = col->RGBBlue;
+
+                    char buf[256] = { 0 };
+                    sprintf(buf, "@Fill.Color.rgb[.r='%d' And .g='%d' And .b='%d']", r, g, b);
+                    auto cql = _bstr_t(buf);
+
+                    auto sr = cdr->ActivePage->Shapes->FindShapes(_bstr_t(), cdrNoShape, VARIANT_TRUE, cql);
+                    sr->CreateSelection();
+                }
+
+                // 将焦点返回到父窗口 关闭对话框窗口
+                SetFocus(GetParent(hDlg));
+                break;
+
+
+            case IDC_CQL_SIZE: {
+                    cdr->ActiveDocument->Unit = cdrMillimeter;
+                    auto s = cdr->ActiveShape;
+
+                    char buf[256] = { 0 };
+                    sprintf(buf, "@width = {%lf mm} and @height = {%lf mm}", s->SizeWidth, s->SizeHeight);
+                    auto cql = _bstr_t(buf);
+
+                //  MessageBox(NULL, cql, "cql 尺寸相同", MB_ICONSTOP);
+                    auto sr = cdr->ActivePage->Shapes->FindShapes(_bstr_t(), cdrNoShape, VARIANT_TRUE, cql);
+                    sr->CreateSelection();
+                }
+
+                // 复制dll改名到CorelDRAW 插件目录
+                // copy /y lycpg64.dll  "C:\Program Files\Corel\CorelDRAW Technical Suite X6\Draw\Plugins64\lycpg64.cpg"
+
+                SetFocus(GetParent(hDlg));
                 break;
 
             case IDC_CLEAR_FILL:
                 cdr->ActiveSelection->Fill->ApplyNoFill();
                 break;
 
-            case IDC_SR_FLIP:
-                {
-                  auto sr = cdr->ActiveSelectionRange;
-                  // CorelDRAW Shapes 物件 Item 编号从1开始
-                  for (auto i = 0; i != sr->Count; i++)
-                      sr->Shapes->Item[i + 1]->Flip(VGCore::cdrFlipHorizontal);
+            case IDC_SR_FLIP: {
+                    auto sr = cdr->ActiveSelectionRange;
+                    // CorelDRAW Shapes 物件 Item 编号从1开始
+                    for (auto i = 0; i != sr->Count; i++)
+                        sr->Shapes->Item[i + 1]->Flip(VGCore::cdrFlipHorizontal);
                 }
                 break;
 

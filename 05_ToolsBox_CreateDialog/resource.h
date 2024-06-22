@@ -3,7 +3,10 @@
 #endif
 
 #define IDD_TOOLS_BOX                           100
-#define IDC_NEWDOC                              1001
-#define IDC_LASTDOC                             1002
-#define IDC_CLEAR_FILL                          1003
-#define IDC_SR_FLIP                             1004
+#define IDB_BITMAP1                             101
+#define IDC_RED                                 40000
+#define IDC_CQL_FILL                            40001
+#define IDC_CQL_OUTLINE                         40002
+#define IDC_CQL_SIZE                            40003
+#define IDC_SR_FLIP                             40004
+#define IDC_CLEAR_FILL                          40005
