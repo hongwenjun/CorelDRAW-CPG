@@ -27,7 +27,7 @@ Path=C:\MSVC2022\bin;%PATH%
 
 ## 构建: `Release` 在 `lycpg64` 中 (编译器: Microsoft Visual C++ 2022)
 
-```
+```shell
 cl.exe /nologo /W3 /EHsc /Ox /DNDEBUG /IC:\MSVC2022\include /ITypeLibs  /c 01_lycpg64\main.cpp /Fo.\main.obj
 
 link.exe /dll /nologo /LIBPATH:C:\MSVC2022\lib /out:lycpg64.dll Gdi32.lib user32.lib Kernel32.lib .\main.obj
@@ -41,7 +41,8 @@ link.exe /dll /nologo /LIBPATH:C:\MSVC2022\lib /out:lycpg64.dll Gdi32.lib user32
 ## 感谢 fersatgit  学习项目 `03_ClearFill` 修复CorelDRAW 2020 使用错误
 - 答疑解惑网址: https://github.com/fersatgit/SmartDepart/issues/1 
 ![](./img/03_ClearFill.gif) 
-```
+
+```cpp
 STDMETHODIMP CVGAppPlugin::raw_StartSession()
 {
   try
@@ -64,4 +65,27 @@ STDMETHODIMP CVGAppPlugin::raw_StartSession()
   }
   return S_OK;
 }
+```
+
+## 学习项目 `05_ToolsBox_CreateDialog` 增加LOGO, CQL语法使用，悬浮窗口，返回父窗口
+![](./img/05_CQLFind.webp) 
+
+- 创建非模态对话框,使用附加数据传递m_pApp 指针: 使用API  `CreateDialogParam` 和 `SetWindowLongPtr`
+- 将焦点返回到父窗口: `SetFocus(GetParent(hDlg));`
+
+### 命令行编译命令
+```shell
+cl.exe /nologo /W3 /EHsc  /Ox /DNDEBUG    /I..\TypeLibs  /c ToolsBox.cpp ToolsBox.obj
+rc.exe  -fo.\ToolsBox.res ToolsBox.rc
+link.exe /dll /nologo /out:lycpg64.dll Gdi32.lib user32.lib Kernel32.lib ToolsBox.obj  ToolsBox.res
+```
+
+### CPG 使用 CQL语法示例
+```cpp
+char buf[256] = { 0 };
+sprintf(buf, "@Outline.Color.rgb[.r='%d' And .g='%d' And .b='%d']", r, g, b);
+auto cql = _bstr_t(buf);
+// MessageBox(NULL, cql, "cql 轮廓颜色", MB_ICONSTOP);
+auto sr = cdr->ActivePage->Shapes->FindShapes(_bstr_t(), cdrNoShape, VARIANT_TRUE, cql);
+sr->CreateSelection();
 ```
