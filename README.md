@@ -89,3 +89,12 @@ auto cql = _bstr_t(buf);
 auto sr = cdr->ActivePage->Shapes->FindShapes(_bstr_t(), cdrNoShape, VARIANT_TRUE, cql);
 sr->CreateSelection();
 ```
+
+## 学习项目 `06_cdrPDF2Clip` 分离按钮功能到单独cpp文件 `cdrPDF2Clip.cpp` 和 `cdrapp.cpp`,添加 `Makefile` 用来编译
+
+### 使用 `Makefile` 用来编译，[参考视频](https://www.bilibili.com/video/BV1Nx4y1874F)
+```shell
+nmake
+name install
+nmake clean
+```
