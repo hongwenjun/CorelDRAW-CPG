@@ -1,0 +1,6 @@
+【蘭雅 CorelDRAW CPG 插件:  VBA 调用 C++ cpg 插件，达到加密和简单做界面的效果】 
+
+https://www.bilibili.com/video/BV1cZ421T7u7
+
+VBA GMS 调用 CPG源码:
+VbaCallCPG.bas  
