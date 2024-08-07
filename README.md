@@ -1,10 +1,12 @@
+### [捐赠 蘭雅 CorelDRAW CPG 开源项目](https://github.com/hongwenjun/corelvba/blob/main/donate.md)
+- [![](https://raw.githubusercontent.com/hongwenjun/vps_setup/master/img/youtube.png)频道](https://www.youtube.com/sRGB18/videos) &nbsp;&nbsp;www.youtube.com/sRGB18 &nbsp;&nbsp;[![](https://raw.githubusercontent.com/hongwenjun/vps_setup/master/img/paypal.png)赞赏支持!](https://paypal.me/sRGB18)&nbsp;&nbsp;https://paypal.me/sRGB18
+
 # CorelDRAW-CPG
 CorelDRAW CPG 扩展开发: CPG(Corel Plug-in Gallery)是 CorelDRAW 的一个扩展机制,可以开发自定义的插件和工具。
 
-
-
-
-
+## CorelDRAW-CPG C++ 编程傻瓜入门文档.xls [下载](./img/) 
+![](./img/cpgdoc_01.png) 
+![](./img/cpgdoc_02.png) 
 
 ## CorelDRAW Graphics Suite 2020  Programs64 TypeLibs
 
@@ -95,6 +97,6 @@ sr->CreateSelection();
 ### 使用 `Makefile` 用来编译，[参考视频](https://www.bilibili.com/video/BV1Nx4y1874F)
 ```shell
 nmake
-name install
+nmake install
 nmake clean
 ```
