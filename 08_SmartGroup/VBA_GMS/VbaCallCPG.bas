@@ -1,5 +1,5 @@
 Attribute VB_Name = "VbaCallCPG"
-Private Declare PtrSafe Function vbadll Lib "C:\Program Files\Corel\CorelDRAW Graphics Suite 2020\Draw\Plugins64\lycpg64.cpg" (ByVal code As Long) As Long
+Private Declare PtrSafe Function vbadll Lib "lycpg64.cpg" (ByVal code As Long) As Long
 
 Sub VBA调用CPG_CDR复制物件到AI()
  ret = vbadll(2)
@@ -35,5 +35,13 @@ Sub cql_SameSize()
 End Sub
 
 Sub fill_red()
+ ret = vbadll(8)
+End Sub
+
+Sub BBox_DrawRectangle()
+ ret = vbadll(8)
+End Sub
+
+Sub Box_AutoGroup()
  ret = vbadll(8)
 End Sub

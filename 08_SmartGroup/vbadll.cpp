@@ -40,6 +40,14 @@ try {
             fill_red(cdr);
         break;
 
+        case 9:
+            BBox_DrawRectangle(cdr);
+        break;
+
+        case 10:
+            Box_AutoGroup(cdr);
+        break;
+
         default:
             return 0;
     }

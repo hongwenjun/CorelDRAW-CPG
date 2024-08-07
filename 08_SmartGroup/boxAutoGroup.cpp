@@ -59,45 +59,6 @@ bool BBox_DrawRectangle(corel *cdr) {
   return true;
 }
 
-
-#include <thread>
-#include <mutex>
-
-std::mutex mtx; // 用于保护共享资源
-
-void groupShapes(std::vector<int> shapes, IVGShapeRangePtr srgp, IVGShapeRangePtr sr) {
-    for (int index : shapes) {
-        srgp->Add(sr->Shapes->Item[index]);
-    }
-    if (shapes.size() > 1) {
-        // 这里需要锁定，以防止多线程访问冲突
-        mtx.lock();
-        srgp->Group();
-        mtx.unlock();
-    }
-    srgp->RemoveAll();
-}
-
-void processGroups(std::map<int, std::vector<int>> groups, corel* cdr , IVGShapeRangePtr sr) {
-    std::vector<std::thread> threads;
-
-    for (const auto& group : groups) {
-
-        auto srgp = cdr->CreateShapeRange();
-
-        // 启动线程处理每个分组
-        threads.emplace_back(groupShapes, group.second, srgp, sr);
-    }
-
-    // 等待所有线程完成
-    for (auto& thread : threads) {
-        if (thread.joinable()) {
-            thread.join();
-        }
-    }
-}
-
-
 // 快速分组重叠的区域, 使用算法"Union-Find" 算法。这个算法可以有效地处理这种并集问题。
 // 算法的时间复杂度为 O(n^2),其中 n 是矩形的数量。如果矩形数量较多,可以考虑使用更高效的算法,
 // 例如使用四叉树(Quadtree)或者区间树(Interval Tree)等数据结构来加速计算。
@@ -162,13 +123,17 @@ bool Box_AutoGroup(corel *cdr) {
     groups[root].push_back(i + 1); // CorelDRAW Shapes 物件 Item 编号从1开始
   }
 
- // 多线程调用
-  processGroups(groups, cdr, sr);
+  auto srgp = cdr->CreateShapeRange();
 
-// https://community.coreldraw.com/sdk/f/coreldraw-and-corel-designer-api/67436/i-am-using-c-to-write-a-cpg-plugin-when-using-shaperange-group-in-coreldraw-to-group-2-000-objects-it-takes-30-seconds
-// 我在使用 C++ 编写CPG 插件，上万个物件重叠分组，C++ 算法速度很快，不到 0.25秒。但是使用 ShapeRange.Group在 CorelDRAW，群组2000个组，速度要30秒。怎么解决软件的瓶颈
-// 我已经使用过窗口刷新优化，调用以上优化函数。现在瓶颈是 ShapeRange.Group 遍历执行2000次，CorelDRAW卡在哪里。是否有能通过多线程，或者SDK调用类似API解决次问题？
-// 多线程调用 ShapeRange.Group() 进行批量群组，好的结果是是程序没有崩溃。坏的结果的并没有提高速度
+  // 分组分别进行群组
+  for (const auto& group : groups) {
+      for (int index : group.second) {
+        srgp->Add(sr->Shapes->Item[index]);
+      }
+      if(sr->Count >1) 
+        srgp->Group();
+      srgp->RemoveAll();
+  }
 
   EndOpt(cdr);
   return true;
