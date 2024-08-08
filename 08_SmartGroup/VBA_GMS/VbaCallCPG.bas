@@ -39,9 +39,9 @@ Sub fill_red()
 End Sub
 
 Sub BBox_DrawRectangle()
- ret = vbadll(8)
+ ret = vbadll(9)
 End Sub
 
 Sub Box_AutoGroup()
- ret = vbadll(8)
+ ret = vbadll(10)
 End Sub

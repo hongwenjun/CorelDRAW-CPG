@@ -113,7 +113,7 @@ bool Box_AutoGroup(corel *cdr) {
     std::chrono::duration<double> duration = end - start;
     output_file << "Execution time: " << duration.count() << " seconds\n";
 
-    output_file.close();
+   // output_file.close();
   } 
 
   // 输出分组结果
@@ -130,11 +130,24 @@ bool Box_AutoGroup(corel *cdr) {
       for (int index : group.second) {
         srgp->Add(sr->Shapes->Item[index]);
       }
-      if(sr->Count >1) 
-        srgp->Group();
+      if(sr->Count >1)  {    
+        srgp->GET_BOUNDING_BOX(box); 
+        // al->CreateRectangle2(box.x, box.y, box.w, box.h, ZERO_4PC); // 使用边界 创建一个矩形
+        // box边界 转左上和右下坐标 box.x, box.y + box.h, box.x + box.w, box.y
+        auto sh = cdr->ActivePage->SelectShapesFromRectangle(box.x, box.y + box.h, box.x + box.w, box.y, false);
+        sh->Group();
+
+        // srgp->Group();  // 使用框选的形状进行群组，竟然比 直接使用 ShapeRange->Group() 快了 10 倍
+        }
       srgp->RemoveAll();
   }
 
+    auto end = std::chrono::high_resolution_clock::now(); // 结束时间
+    // 计算持续时间
+    std::chrono::duration<double> duration = end - start;
+    output_file << "使用 SelectShapesFromRectangle 框选的形状进行群组，竟然比 直接使用 ShapeRange->Group() 快了 10 倍\nExecution time: " << duration.count() << " seconds\n";
+
+    output_file.close();
   EndOpt(cdr);
   return true;
 }
