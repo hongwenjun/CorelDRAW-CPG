@@ -124,6 +124,7 @@ bool Box_AutoGroup(corel *cdr) {
   }
 
   auto srgp = cdr->CreateShapeRange();
+  auto srs = cdr->CreateShapeRange();
 
   cdr->ActiveDocument->ClearSelection();
 // 原来 没有取消选择 最初速度
@@ -146,13 +147,17 @@ bool Box_AutoGroup(corel *cdr) {
 
   // 分组分别进行群组
   for (const auto& group : groups) {
-      for (int index : group.second) {
+      for (int index : group.second) 
         srgp->Add(sr->Shapes->Item[index]);
-      }
+      
       if(sr->Count >1)
-        srgp->Group();      
+        srs->Add(srgp->Group());
+      else
+        srs->AddRange(srgp);  
+
       srgp->RemoveAll();
   }
+  srs->CreateSelection();
   EndOpt(cdr);
   return true;
 }

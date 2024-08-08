@@ -203,7 +203,7 @@ INT_PTR CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
             case IDC_RED :
                 Box_AutoGroup(cdr);
 
-                MessageBox(NULL, "方框智能群组:Union-Find 算法\n 分组记录请查看: D:\\group.txt", "CPG代码测试", MB_ICONSTOP);
+            //    MessageBox(NULL, "方框智能群组:Union-Find 算法\n 分组记录请查看: D:\\group.txt", "CPG代码测试", MB_ICONSTOP);
                 Active_CorelWindows(hDlg);
                 break;
 
