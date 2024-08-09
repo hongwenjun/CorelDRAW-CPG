@@ -201,15 +201,10 @@ INT_PTR CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
         try {
             switch (LOWORD(wParam)) {
             case IDC_RED :{
-                    char ibuf[64];
-                    memset(ibuf, 0, 64);
-                    GetWindowText(::GetDlgItem(hDlg, EXP_TEXT), ibuf, 64);
-                    double exp = 0.0;
-                    sscanf(ibuf, "%lf", &exp);
-
+                    double exp = GetTextValue(hDlg, EXP_TEXT);
                     Box_AutoGroup(cdr, exp);
 
-                //    MessageBox(NULL, "方框智能群组:Union-Find 算法\n 分组记录请查看: D:\\group.txt", "CPG代码测试", MB_ICONSTOP);
+// MessageBox(NULL, "方框智能群组:Union-Find 算法\n 分组记录请查看: D:\\group.txt", "CPG代码测试", MB_ICONSTOP);
                     Active_CorelWindows(hDlg);
                 }
                 break;
@@ -229,8 +224,12 @@ INT_PTR CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
                 Active_CorelWindows(hDlg);
                 break;
 
-            case IDC_CLEAR_FILL:
-                Clear_Fill(cdr);
+            case IDC_CLEAR_FILL:{
+                    double exp = GetTextValue(hDlg, EXP_TEXT);
+                    BBox_DrawRectangle(cdr, exp);
+                    Active_CorelWindows(hDlg);
+                // Clear_Fill(cdr);
+                }
                 break;
 
             case IDC_SR_FLIP:
@@ -256,6 +255,7 @@ INT_PTR CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
         }
 
     } else if (uMsg == WM_INITDIALOG) {
+             SetWindowText(::GetDlgItem(hDlg, EXP_TEXT), "0");
         return 1;
     }
     return 0;

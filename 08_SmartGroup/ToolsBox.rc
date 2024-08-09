@@ -22,7 +22,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 1
     CTEXT           "蘭雅 CorelDRAW CPG 插件 2024.8.8 智能群组版", 0, 21, 105, 94, 17, SS_CENTER, WS_EX_LEFT
     PUSHBUTTON      "方框智能群组", IDC_RED, 73, 2, 59, 21, 0, WS_EX_LEFT
     PUSHBUTTON      "CQL轮廓色相同", IDC_CQL_OUTLINE, 5, 2, 59, 24, 0, WS_EX_LEFT
-    PUSHBUTTON      "无填色", IDC_CLEAR_FILL, 74, 36, 59, 19, 0, WS_EX_LEFT
+    PUSHBUTTON      "边界画矩形", IDC_CLEAR_FILL, 74, 36, 59, 19, 0, WS_EX_LEFT
     PUSHBUTTON      "批量镜像", IDC_SR_FLIP, 73, 57, 59, 19, 0, WS_EX_LEFT
     PUSHBUTTON      "CQL颜色相同", IDC_CQL_FILL, 5, 27, 59, 24, 0, WS_EX_LEFT
     PUSHBUTTON      "CQL尺寸相同", IDC_CQL_SIZE, 5, 52, 59, 24, 0, WS_EX_LEFT
@@ -31,3 +31,11 @@ FONT 8, "MS Shell Dlg", 400, 0, 1
     LTEXT           "容差:(mm)", EXP_LT, 72, 25, 37, 9, SS_LEFT, WS_EX_LEFT
     EDITTEXT        EXP_TEXT, 107, 23, 28, 14, NOT WS_TABSTOP | ES_AUTOHSCROLL, WS_EX_DLGMODALFRAME
 }
+
+
+
+//
+// Icon resources
+//
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDI_ICON1          ICON           ".\\LYVBA.ico"

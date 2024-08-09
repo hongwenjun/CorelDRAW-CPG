@@ -3,6 +3,7 @@
 #endif
 
 #define IDD_TOOLS_BOX                           100
+#define IDI_ICON1                               101
 #define IDC_RED                                 40000
 #define IDC_CQL_FILL                            40001
 #define IDC_CQL_OUTLINE                         40002

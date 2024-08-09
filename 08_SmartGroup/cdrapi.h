@@ -13,5 +13,6 @@ using namespace VGCore;
 void BeginOpt(corel *cdr);
 void EndOpt(corel *cdr);
 void Active_CorelWindows(HWND hDlg);
+double GetTextValue(HWND hDlg, int IDITEM);
 
 #endif // CDRAPI_H_INCLUDED

@@ -1,47 +1,50 @@
 Attribute VB_Name = "VbaCallCPG"
-Private Declare PtrSafe Function vbadll Lib "lycpg64.cpg" (ByVal code As Long) As Long
+Private Declare PtrSafe Function vbadll Lib "lycpg64.cpg" (ByVal code As Long, ByVal x As Double) As Long
 
-Sub VBAµ÷ÓÃCPG_CDR¸´ÖÆÎï¼şµ½AI()
- ret = vbadll(2)
- MsgBox "CDR¸´ÖÆÎï¼şµ½AI ¹¦ÄÜ " & ret
+Sub VBAè°ƒç”¨CPG_CDRå¤åˆ¶ç‰©ä»¶åˆ°AI()
+ ret = vbadll(2, 0)
+ MsgBox "CDRå¤åˆ¶ç‰©ä»¶åˆ°AI åŠŸèƒ½ " & ret
 End Sub
 
-Sub AI¸´ÖÆÎï¼şµ½CDR()
- ret = vbadll(1)
- MsgBox "AI¸´ÖÆÎï¼şµ½CDR ¹¦ÄÜ " & ret
+Sub AIå¤åˆ¶ç‰©ä»¶åˆ°CDR()
+ ret = vbadll(1, 0)
+ MsgBox "AIå¤åˆ¶ç‰©ä»¶åˆ°CDR åŠŸèƒ½ " & ret
 End Sub
 
 Sub Clear_Fill()
- ret = vbadll(3)
- MsgBox "Clear_Fill¹¦ÄÜ " & ret
+ ret = vbadll(3, 0)
+ MsgBox "Clear_FillåŠŸèƒ½ " & ret
 End Sub
 
 
 Sub cql_FillColor()
- ret = vbadll(5)
+ ret = vbadll(5, 0)
 End Sub
 
 
 Sub Shapes_Filp()
- ret = vbadll(4)
+ ret = vbadll(4, 0)
 End Sub
 
 Sub cql_OutlineColor()
- ret = vbadll(6)
+ ret = vbadll(6, 0)
 End Sub
 
 Sub cql_SameSize()
- ret = vbadll(7)
+ ret = vbadll(7, 0)
 End Sub
 
 Sub fill_red()
- ret = vbadll(8)
+ ret = vbadll(8, 0)
 End Sub
 
+'// ç¬¬9å·åŠŸèƒ½: æŒ‰è¾¹ç•Œæ‰¹é‡ç»˜åˆ¶çŸ©å½¢  å‚æ•°:æ­£æ•°å‘å¤–ï¼Œè´Ÿæ•°å‘å†…
 Sub BBox_DrawRectangle()
- ret = vbadll(9)
+ ret = vbadll(9, -2#)
 End Sub
 
+'// ç¬¬10å·åŠŸèƒ½: æ™ºèƒ½ç¾¤ç»„åŠŸèƒ½  å‚æ•°:æ­£æ•° å‘å¤–å®¹å·®  è´Ÿæ•° å‘å†…å®¹å·®
 Sub Box_AutoGroup()
- ret = vbadll(10)
+ ret = vbadll(10, -2#)
 End Sub
+

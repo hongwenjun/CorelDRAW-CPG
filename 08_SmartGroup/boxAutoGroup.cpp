@@ -58,17 +58,27 @@ bool isOverlapped(const BoundingBox &a, const BoundingBox &b) {
   return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 } // 函数使用AABB（Axis-Aligned Bounding Box）碰撞检测
 
-bool BBox_DrawRectangle(corel *cdr) {
+bool BBox_DrawRectangle(corel *cdr, double exp) {
   BoundingBox box;
   auto sr = cdr->ActiveSelectionRange; // 获得选择范围
   auto al = cdr->ActiveLayer;          // 获得当前层
   if (!sr || !al) return false;
+  
+  BeginOpt(cdr);
+  auto srs = cdr->CreateShapeRange();
 
   // CorelDRAW Shapes 物件 Item 编号从1开始
   for (auto i = 0; i != sr->Count; i++) {
     sr->Shapes->Item[i + 1]->GET_BOUNDING_BOX(box); // 获得Shapes的BoundingBox，赋值到box
-    al->CreateRectangle2(box.x, box.y, box.w, box.h, ZERO_4PC); // 使用BoundingBox box 创建一个矩形
+    if (fabs(exp) > 0.02 ) { box.w += 2 * exp; box.h += 2 * exp; box.x -= exp; box.y -= exp; }
+    
+    auto s = al->CreateRectangle2(box.x, box.y, box.w, box.h, ZERO_4PC); // 使用BoundingBox box 创建一个矩形
+    s->Outline->Color->RGBAssign(0, 255, 0);
+    srs->Add(s);
   }
+  srs->CreateSelection();
+  
+  EndOpt(cdr);
   return true;
 }
 
@@ -96,7 +106,7 @@ bool Box_AutoGroup(corel *cdr, double exp) {
   }
 
   // 扩展边界框，或者收缩边界框
-  if (abs(exp) > 0.01 ) {
+  if (fabs(exp) > 0.02 ) {
     expand_bounding_boxes(boxes, exp);
   }
 

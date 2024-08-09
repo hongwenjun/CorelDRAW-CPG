@@ -4,7 +4,7 @@
 
 extern corel *cdr;
 extern "C" __declspec(dllexport)
-int __stdcall vbadll(int code){
+int __stdcall vbadll(int code, double x =0.0){
 
 try {
     switch(code){
@@ -41,11 +41,11 @@ try {
         break;
 
         case 9:
-            BBox_DrawRectangle(cdr);
+            BBox_DrawRectangle(cdr, x);
         break;
 
         case 10:
-            Box_AutoGroup(cdr, 0.0);
+            Box_AutoGroup(cdr, x);
         break;
 
         default:
