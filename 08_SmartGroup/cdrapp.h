@@ -13,7 +13,7 @@ bool Clear_Fill(corel *cdr);
 void CdrCopy_to_AdobeAI(corel *cdr);
 void AdobeAI_Copy_ImportCdr(corel *cdr);
 
-bool Box_AutoGroup(corel *cdr);
+bool Box_AutoGroup(corel *cdr, double exp = 0.0);
 bool BBox_DrawRectangle(corel *cdr);
 
 #endif // CDRAPP_H_INCLUDED

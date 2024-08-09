@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
+#include <math.h>
 
 #define GET_BOUNDING_BOX(box)                                                  \
   GetBoundingBox(&(box).x, &(box).y, &(box).w, &(box).h, false)
@@ -17,6 +18,18 @@ typedef struct {
   double w; // 宽度
   double h; // 高度
 } BoundingBox;
+
+// 扩展边界框
+void expand_bounding_boxes(std::vector<BoundingBox>& boxes, double exp) {
+    for (auto& box : boxes) {
+        // 扩展宽度和高度
+        box.w += 2 * exp; // 左右各扩展
+        box.h += 2 * exp; // 上下各扩展
+        // 调整左下角坐标
+        box.x -= exp; // 向左扩展
+        box.y -= exp; // 向下扩展
+    }
+}
 
 double get_bounding_box_area(BoundingBox box) { return box.w * box.h; }
 
@@ -62,7 +75,7 @@ bool BBox_DrawRectangle(corel *cdr) {
 // 快速分组重叠的区域, 使用算法"Union-Find" 算法。这个算法可以有效地处理这种并集问题。
 // 算法的时间复杂度为 O(n^2),其中 n 是矩形的数量。如果矩形数量较多,可以考虑使用更高效的算法,
 // 例如使用四叉树(Quadtree)或者区间树(Interval Tree)等数据结构来加速计算。
-bool Box_AutoGroup(corel *cdr) {
+bool Box_AutoGroup(corel *cdr, double exp) {
   BoundingBox box;
 
   auto sr = cdr->ActiveSelectionRange; // 获得选择范围
@@ -80,6 +93,11 @@ bool Box_AutoGroup(corel *cdr) {
     sr->Shapes->Item[i + 1]->GET_BOUNDING_BOX(box);
     boxes.push_back(box);
     parent.push_back(i);
+  }
+
+  // 扩展边界框，或者收缩边界框
+  if (abs(exp) > 0.01 ) {
+    expand_bounding_boxes(boxes, exp);
   }
 
   // 实现 Union-Find 算法来合并重叠的区域

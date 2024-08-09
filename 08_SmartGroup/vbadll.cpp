@@ -45,7 +45,7 @@ try {
         break;
 
         case 10:
-            Box_AutoGroup(cdr);
+            Box_AutoGroup(cdr, 0.0);
         break;
 
         default:

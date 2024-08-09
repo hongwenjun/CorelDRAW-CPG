@@ -11,3 +11,5 @@
 #define IDC_CLEAR_FILL                          40005
 #define IDC_CDR2AI                              40006
 #define IDC_AI2CDR                              40007
+#define EXP_LT                                  40008
+#define EXP_TEXT                                40009

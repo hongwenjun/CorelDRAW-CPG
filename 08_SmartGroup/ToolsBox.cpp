@@ -200,11 +200,18 @@ INT_PTR CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
     if (uMsg == WM_COMMAND) {
         try {
             switch (LOWORD(wParam)) {
-            case IDC_RED :
-                Box_AutoGroup(cdr);
+            case IDC_RED :{
+                    char ibuf[64];
+                    memset(ibuf, 0, 64);
+                    GetWindowText(::GetDlgItem(hDlg, EXP_TEXT), ibuf, 64);
+                    double exp = 0.0;
+                    sscanf(ibuf, "%lf", &exp);
 
-            //    MessageBox(NULL, "方框智能群组:Union-Find 算法\n 分组记录请查看: D:\\group.txt", "CPG代码测试", MB_ICONSTOP);
-                Active_CorelWindows(hDlg);
+                    Box_AutoGroup(cdr, exp);
+
+                //    MessageBox(NULL, "方框智能群组:Union-Find 算法\n 分组记录请查看: D:\\group.txt", "CPG代码测试", MB_ICONSTOP);
+                    Active_CorelWindows(hDlg);
+                }
                 break;
 
             case IDC_CQL_OUTLINE:
