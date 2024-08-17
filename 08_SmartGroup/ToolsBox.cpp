@@ -22,7 +22,7 @@ private:
     volatile ULONG m_ulRefCount;
     long m_lCookie;
 
-    static INT_PTR CALLBACK DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    static intptr_t CALLBACK DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
     void OpenToolsBox();
 
 
@@ -159,7 +159,7 @@ void ToolsBoxPlugin::OpenToolsBox()
 {
     m_pApp->StartupMode = VGCore::cdrStartupDoNothing;
 
-    INT_PTR nHandle = m_pApp->AppWindow->Handle;
+    intptr_t nHandle = m_pApp->AppWindow->Handle;
     HWND hAppWnd = reinterpret_cast<HWND>(nHandle);
 
     // 创建非模态对话框
@@ -192,7 +192,7 @@ void ToolsBoxPlugin::OpenToolsBox()
 }
 
 
-INT_PTR CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     // 从附加数据中获取 m_pApp 指针
     VGCore::IVGApplication* cdr = reinterpret_cast<VGCore::IVGApplication*>(GetWindowLongPtr(hDlg, DWLP_USER));

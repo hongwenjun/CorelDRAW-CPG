@@ -1,6 +1,9 @@
 ﻿#include "cdrapp.h"
 #include <stdio.h>
 #include <windows.h>
+#include <thread>
+#include <chrono>
+
 
 
 #define CUSTOM_FORMAT RegisterClipboardFormatA("Portable Document Format")
@@ -167,6 +170,10 @@ void AdobeAI_Copy_ImportCdr(corel *cdr)
     char path[MAX_PATH] = {0};
     GetTempPath(MAX_PATH, path);
     char *f = strcat(path, "CDR2AI.pdf");
-    if (clipboard_to_pdf(f))
+    if (clipboard_to_pdf(f)){
+        // 延时 0.3 秒
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
         pdf_ImportCdr(cdr, f);
+    }
+
 }
