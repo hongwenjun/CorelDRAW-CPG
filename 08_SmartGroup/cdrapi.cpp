@@ -35,3 +35,7 @@ double GetTextValue(HWND hDlg, int IDITEM) {
     sscanf_s(ibuf, "%lf", &exp);
     return exp;
 }
+
+void PutTextValue(HWND hDlg, int IDITEM, char *buf) {
+  SetWindowText(::GetDlgItem(hDlg, IDITEM), buf);
+}

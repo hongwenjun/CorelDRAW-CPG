@@ -14,3 +14,4 @@
 #define IDC_AI2CDR                              40007
 #define EXP_LT                                  40008
 #define EXP_TEXT                                40009
+#define INFO_TEXT                               40010

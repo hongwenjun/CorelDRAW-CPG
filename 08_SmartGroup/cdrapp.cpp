@@ -27,6 +27,8 @@ bool cql_OutlineColor(corel *cdr)
     // MessageBox(NULL, cql, "cql 轮廓颜色", MB_ICONSTOP);
     auto sr = cdr->ActivePage->Shapes->FindShapes(_bstr_t(), cdrNoShape, VARIANT_TRUE, cql);
     sr->CreateSelection();
+
+    strcpy(infobuf , buf);
     return true;
 }
 
@@ -47,6 +49,8 @@ bool cql_FillColor(corel *cdr)
 
     auto sr = cdr->ActivePage->Shapes->FindShapes(_bstr_t(), cdrNoShape, VARIANT_TRUE, cql);
     sr->CreateSelection();
+
+    strcpy(infobuf , buf);
     return true;
 }
 
@@ -62,6 +66,8 @@ bool cql_SameSize(corel *cdr)
     //  MessageBox(NULL, cql, "cql 尺寸相同", MB_ICONSTOP);
     auto sr = cdr->ActivePage->Shapes->FindShapes(_bstr_t(), cdrNoShape, VARIANT_TRUE, cql);
     sr->CreateSelection();
+
+    strcpy(infobuf , buf);
     return true;
 }
 

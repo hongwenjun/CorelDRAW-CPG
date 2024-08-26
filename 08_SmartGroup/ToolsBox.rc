@@ -19,7 +19,7 @@ STYLE DS_MODALFRAME | DS_SHELLFONT | WS_CAPTION | WS_POPUP | WS_SYSMENU
 CAPTION "蘭雅 CPG 插件 福利群版"
 FONT 8, "MS Shell Dlg", 400, 0, 1
 {
-    CTEXT           "蘭雅 CorelDRAW CPG 插件 2024.8.8 智能群组版", 0, 21, 105, 94, 17, SS_CENTER, WS_EX_LEFT
+    CTEXT           "蘭雅 CorelDRAW CPG 插件\n2024.8.8 智能群组版", INFO_TEXT, 6, 105, 126, 17, SS_CENTER, WS_EX_LEFT
     PUSHBUTTON      "方框智能群组", IDC_RED, 73, 2, 59, 21, 0, WS_EX_LEFT
     PUSHBUTTON      "CQL轮廓色相同", IDC_CQL_OUTLINE, 5, 2, 59, 24, 0, WS_EX_LEFT
     PUSHBUTTON      "边界画矩形", IDC_CLEAR_FILL, 74, 36, 59, 19, 0, WS_EX_LEFT

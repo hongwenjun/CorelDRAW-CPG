@@ -1,12 +1,11 @@
-﻿#include <stdio.h>
+﻿#include "cdrapp.h"
+#include <stdio.h>
 #include <windows.h>
-#include "cdrapi.h"
 #include "resource.h"
-#include "cdrapp.h"
 
 corel *cdr = NULL;
 static HINSTANCE g_hResource = NULL;
-
+char infobuf[256] = {0};
 BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
     if (fdwReason == DLL_PROCESS_ATTACH) {
@@ -192,6 +191,9 @@ void ToolsBoxPlugin::OpenToolsBox()
 }
 
 
+// MessageBox(NULL, "更新提示信息: 激活CorelDRAW窗口", "CPG代码测试", MB_ICONSTOP);
+#define UPDATE_INFO_ACTIVE_CDRWND  \
+    PutTextValue(hDlg, INFO_TEXT, infobuf); Active_CorelWindows(hDlg);
 intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     // 从附加数据中获取 m_pApp 指针
@@ -204,33 +206,35 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
                     double exp = GetTextValue(hDlg, EXP_TEXT);
                     AutoMakeSelection(cdr);
                     Box_AutoGroup(cdr, exp);
+                    UPDATE_INFO_ACTIVE_CDRWND
 
-// MessageBox(NULL, "方框智能群组:Union-Find 算法\n 分组记录请查看: D:\\group.txt", "CPG代码测试", MB_ICONSTOP);
-                    Active_CorelWindows(hDlg);
                 }
                 break;
 
             case IDC_CQL_OUTLINE:
                 cql_OutlineColor(cdr);
-                Active_CorelWindows(hDlg);
+
+                UPDATE_INFO_ACTIVE_CDRWND
                 break;
 
             case IDC_CQL_FILL:
                 cql_FillColor(cdr);
-                Active_CorelWindows(hDlg);
+
+                UPDATE_INFO_ACTIVE_CDRWND
                 break;
 
             case IDC_CQL_SIZE:
                 cql_SameSize(cdr);
-                Active_CorelWindows(hDlg);
+
+                UPDATE_INFO_ACTIVE_CDRWND
                 break;
 
             case IDC_CLEAR_FILL:{
                     double exp = GetTextValue(hDlg, EXP_TEXT);
                     AutoMakeSelection(cdr);
                     BBox_DrawRectangle(cdr, exp);
-                    Active_CorelWindows(hDlg);
-                // Clear_Fill(cdr);
+                    
+                    UPDATE_INFO_ACTIVE_CDRWND
                 }
                 break;
 
@@ -238,12 +242,19 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
                 Shapes_Filp(cdr);
                 break;
 
-            case IDC_CDR2AI:
+            case IDC_CDR2AI:{    
                 CdrCopy_to_AdobeAI(cdr);
+                sprintf(infobuf, "把CorelDRAW软件中选择物件复制到剪贴板，请切换到AI软件粘贴");
+                UPDATE_INFO_ACTIVE_CDRWND
+                }
+
                 break;
 
-            case IDC_AI2CDR:
+            case IDC_AI2CDR:{
                 AdobeAI_Copy_ImportCdr(cdr);
+                sprintf(infobuf, "请先在AI软件选择物件复制，再切换到CorelDRAW软件点执行本功能");
+                UPDATE_INFO_ACTIVE_CDRWND
+                }
                 break;
 
             case IDOK:

@@ -1,5 +1,6 @@
 ﻿#include "cdrapp.h"
 #include <algorithm>
+#include <cstdio>
 #include <map>
 #include <vector>
 #include <iostream>
@@ -78,6 +79,7 @@ bool BBox_DrawRectangle(corel *cdr, double exp) {
   }
   srs->CreateSelection();
   
+  sprintf(infobuf, "提示: 标记画框数量: %d 个\n容差值请使用小键盘输入", srs->Count);
   EndOpt(cdr);
   return true;
 }
@@ -128,30 +130,35 @@ bool Box_AutoGroup(corel *cdr, double exp) {
     }
   }
 
+  double runtime[2] = {0,0};
+  auto end = std::chrono::high_resolution_clock::now(); 
+  std::chrono::duration<double> duration = end - start;
+  runtime[0] = duration.count();
+
  // 输出分组结果到文件
-  std::ofstream output_file("D:\\group.txt");
-  if (output_file.is_open()) {
-      std::map<int, std::vector<int>> groups;
-      for (int i = 0; i < parent.size(); i++) {
-          int root = find(parent, i);
-          groups[root].push_back(i + 1); // CorelDRAW Shapes 物件 Item 编号从1开始
-      }
+  // std::ofstream output_file("D:\\group.txt");
+  // if (output_file.is_open()) {
+  //     std::map<int, std::vector<int>> groups;
+  //     for (int i = 0; i < parent.size(); i++) {
+  //         int root = find(parent, i);
+  //         groups[root].push_back(i + 1); // CorelDRAW Shapes 物件 Item 编号从1开始
+  //     }
 
-      for (const auto& group : groups) {
-          output_file << "Group: ";
-          for (int index : group.second) {
-              output_file << index << " ";
-          }
-          output_file << std::endl;
-      }
+  //     for (const auto& group : groups) {
+  //         output_file << "Group: ";
+  //         for (int index : group.second) {
+  //             output_file << index << " ";
+  //         }
+  //         output_file << std::endl;
+  //     }
 
-    auto end = std::chrono::high_resolution_clock::now(); // 结束时间
-    // 计算持续时间
-    std::chrono::duration<double> duration = end - start;
-    output_file << "Execution time: " << duration.count() << " seconds\n";
+  //   auto end = std::chrono::high_resolution_clock::now(); // 结束时间
+  //   // 计算持续时间
+  //   std::chrono::duration<double> duration = end - start;
+  //   output_file << "Execution time: " << duration.count() << " seconds\n";
 
-    output_file.close();
-  } 
+  //   output_file.close();
+  // } 
 
   // 输出分组结果
   std::map<int, std::vector<int>> groups;
@@ -195,6 +202,12 @@ bool Box_AutoGroup(corel *cdr, double exp) {
       srgp->RemoveAll();
   }
   srs->CreateSelection();
+
+  // 计算持续时间
+  duration = std::chrono::high_resolution_clock::now() - start;
+  runtime[1] = duration.count();
+
+  sprintf(infobuf, "选择物件: %d 个, 分组: %.2f秒\n总共群组: %d 组, 总时间: %.2f秒", sr->Count, runtime[0] + 0.01, srs->Count, runtime[1] + 0.02);
   EndOpt(cdr);
   return true;
 }

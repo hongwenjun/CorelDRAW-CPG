@@ -163,6 +163,7 @@ bool pdf_ImportCdr(corel *cdr, const char *pdffile)
    
    auto impflt = cdr->ActiveLayer->ImportEx(_bstr_t(pdffile), cdrAutoSense , si);
    impflt->Finish();
+   return true;
 }
 
 void AdobeAI_Copy_ImportCdr(corel *cdr)
@@ -171,8 +172,8 @@ void AdobeAI_Copy_ImportCdr(corel *cdr)
     GetTempPath(MAX_PATH, path);
     char *f = strcat(path, "CDR2AI.pdf");
     if (clipboard_to_pdf(f)){
-        // 延时 0.3 秒
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        // 延时 0.5 秒
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
         pdf_ImportCdr(cdr, f);
     }
 

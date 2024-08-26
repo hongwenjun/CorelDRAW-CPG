@@ -17,4 +17,6 @@ bool AutoMakeSelection(corel *cdr);
 bool Box_AutoGroup(corel *cdr, double exp = 0.0);
 bool BBox_DrawRectangle(corel *cdr, double exp = 0.0);
 
+extern char infobuf[];
+
 #endif // CDRAPP_H_INCLUDED
