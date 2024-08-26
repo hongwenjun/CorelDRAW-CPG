@@ -82,6 +82,15 @@ bool BBox_DrawRectangle(corel *cdr, double exp) {
   return true;
 }
 
+bool AutoMakeSelection(corel *cdr) {
+  auto sr = cdr->ActiveSelectionRange; 
+  if (0 == sr->Count) {
+    auto all = cdr->ActiveDocument->ActivePage->Shapes->All();
+    all->CreateSelection();
+  }
+  return true;
+}
+
 // 快速分组重叠的区域, 使用算法"Union-Find" 算法。这个算法可以有效地处理这种并集问题。
 // 算法的时间复杂度为 O(n^2),其中 n 是矩形的数量。如果矩形数量较多,可以考虑使用更高效的算法,
 // 例如使用四叉树(Quadtree)或者区间树(Interval Tree)等数据结构来加速计算。

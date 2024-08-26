@@ -1,0 +1,42 @@
+<html>
+<head>
+<title>lycpg64构建日志</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+<body>
+<tt>
+开始构建：<u>26-08-2024 at 09:35.14</u><br />
+构建结束于：<u>26-08-2024 at 09:35.18</u><p />
+<b>-------------- 构建: Release 在 lycpg64 中 (编译器: Microsoft Visual C++ 2022)---------------</b><br />
+cl.exe /nologo /W3 /EHsc  /Ox /DNDEBUG  /MT   /I..\TypeLibs /IC:\MSVC2022\include /IC:\soft\Git\srgb\CorelDRAW-CPG\08_SmartGroup /c boxAutoGroup.cpp /Foobj\Release\boxAutoGroup.obj<br />
+cl.exe /nologo /W3 /EHsc  /Ox /DNDEBUG  /MT   /I..\TypeLibs /IC:\MSVC2022\include /IC:\soft\Git\srgb\CorelDRAW-CPG\08_SmartGroup /c cdrapi.cpp /Foobj\Release\cdrapi.obj<br />
+boxAutoGroup.cpp<br />
+cdrapi.cpp<br />
+cl.exe /nologo /W3 /EHsc  /Ox /DNDEBUG  /MT   /I..\TypeLibs /IC:\MSVC2022\include /IC:\soft\Git\srgb\CorelDRAW-CPG\08_SmartGroup /c cdrapp.cpp /Foobj\Release\cdrapp.obj<br />
+cdrapp.cpp<br />
+<font color="#0000ff">cdrapp.cpp(25): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.</font><br />
+<font color="#0000ff">cdrapp.cpp(45): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.</font><br />
+<font color="#0000ff">cdrapp.cpp(59): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.</font><br />
+cl.exe /nologo /W3 /EHsc  /Ox /DNDEBUG  /MT   /I..\TypeLibs /IC:\MSVC2022\include /IC:\soft\Git\srgb\CorelDRAW-CPG\08_SmartGroup /c cdrPDF2Clip.cpp /Foobj\Release\cdrPDF2Clip.obj<br />
+cdrPDF2Clip.cpp<br />
+cl.exe /nologo /W3 /EHsc  /Ox /DNDEBUG  /MT   /I..\TypeLibs /IC:\MSVC2022\include /IC:\soft\Git\srgb\CorelDRAW-CPG\08_SmartGroup /c ToolsBox.cpp /Foobj\Release\ToolsBox.obj<br />
+ToolsBox.cpp<br />
+<font color="#0000ff">cdrPDF2Clip.cpp(23): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.</font><br />
+<font color="#0000ff">cdrPDF2Clip.cpp(103): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.</font><br />
+<font color="#0000ff">cdrPDF2Clip.cpp(154): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.</font><br />
+<font color="#0000ff">cdrPDF2Clip.cpp(172): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.</font><br />
+<font color="#0000ff">ToolsBox.cpp(189): warning C4311: “类型强制转换”: 从“HWND”到“LONG”的指针截断</font><br />
+<font color="#0000ff">C:\soft\Git\srgb\CorelDRAW-CPG\08_SmartGroup\cdrPDF2Clip.cpp(166) : warning C4715: “pdf_ImportCdr”: 不是所有的控件路径都返回值</font><br />
+rc.exe /IC:\MSVC2022\include /IC:\soft\Git\srgb\CorelDRAW-CPG\08_SmartGroup  -foobj\Release\ToolsBox.res ToolsBox.rc<br />
+<font color="#0000ff">ToolsBox.cpp(189): warning C4302: “类型强制转换”: 从“HWND”到“LONG”截断</font><br />
+cl.exe /nologo /W3 /EHsc  /Ox /DNDEBUG  /MT   /I..\TypeLibs /IC:\MSVC2022\include /IC:\soft\Git\srgb\CorelDRAW-CPG\08_SmartGroup /c vbadll.cpp /Foobj\Release\vbadll.obj<br />
+vbadll.cpp<br />
+Microsoft (R) Windows (R) Resource Compiler Version 10.0.10011.16384<br />
+Copyright (C) Microsoft Corporation.  All rights reserved.<br />
+link.exe /dll /nologo /LIBPATH:C:\MSVC2022\lib /out:bin\Release\lycpg64.dll Gdi32.lib user32.lib Kernel32.lib obj\Release\boxAutoGroup.obj obj\Release\cdrapi.obj obj\Release\cdrapp.obj obj\Release\cdrPDF2Clip.obj obj\Release\ToolsBox.obj obj\Release\vbadll.obj  obj\Release\ToolsBox.res<br />
+  正在创建库 bin\Release\lycpg64.lib 和对象 bin\Release\lycpg64.exp<br />
+输出文件为 bin\Release\lycpg64.dll，大小为 314.50 KB<br />
+<font color="#0000ff">程序退出, 返回状态码：0 (0 分, 3 秒)</font><br />
+<font color="#0000ff">0个错误, 10个警告 (0 分, 3 秒)</font><br />
+</tt>
+</body>
+</html>

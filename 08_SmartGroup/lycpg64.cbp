@@ -44,6 +44,7 @@
 			<Option compilerVar="WINDRES" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="boxAutoGroup.cpp" />
 		<Unit filename="cdrPDF2Clip.cpp" />
 		<Unit filename="cdrapi.cpp" />
 		<Unit filename="cdrapi.h" />

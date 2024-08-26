@@ -202,6 +202,7 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
             switch (LOWORD(wParam)) {
             case IDC_RED :{
                     double exp = GetTextValue(hDlg, EXP_TEXT);
+                    AutoMakeSelection(cdr);
                     Box_AutoGroup(cdr, exp);
 
 // MessageBox(NULL, "方框智能群组:Union-Find 算法\n 分组记录请查看: D:\\group.txt", "CPG代码测试", MB_ICONSTOP);
@@ -226,6 +227,7 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 
             case IDC_CLEAR_FILL:{
                     double exp = GetTextValue(hDlg, EXP_TEXT);
+                    AutoMakeSelection(cdr);
                     BBox_DrawRectangle(cdr, exp);
                     Active_CorelWindows(hDlg);
                 // Clear_Fill(cdr);
