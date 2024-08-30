@@ -1,6 +1,7 @@
 ﻿#include "cdrapp.h"
 #include <cerrno>
 #include <cmath>
+#include <cstddef>
 
 bool isDPCurve(IVGShapePtr s) {
   auto dpc = (s->Type == cdrRectangleShape) || (s->Type == cdrEllipseShape) ||
@@ -40,6 +41,7 @@ bool isIntWith(corel *cdr, IVGShape *s1, IVGShape *s2) {
     auto scp = CreateBoundary(cdr, s1);
     isIn = scp->GetDisplayCurve()->IntersectsWith(s2->GetDisplayCurve());
     scp->Delete();
+
   } else {
     auto scp = CreateBoundary(cdr, s1);
     auto scp2 = CreateBoundary(cdr, s2);
@@ -68,6 +70,7 @@ bool BoundaryGroup(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs) {
   BoundingBox box, bound_box;
   double x, y;
   int OnSh = 0;
+  auto red = cdr->CreateCMYKColor(0, 100, 100, 0);
 
   // 处理文字和影响的物件
   auto txtbox = cdr->CreateShapeRange();
@@ -83,11 +86,35 @@ bool BoundaryGroup(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs) {
     sr->AddRange(txtbox);
   }
 
+
+  // auto stmp = sr->CreateBoundary(0, 0, true, false); // 建立异性边界物件
+  // auto ef1 = stmp->CreateContour(
+  //     cdrContourOutside, 0.2, 1, cdrDirectFountainFillBlend, red, NULL, NULL, 0,
+  //     0, cdrContourSquareCap, cdrContourCornerMiteredOffsetBevel, 15);
+
+  // auto bounds = ef1->Separate();
+  // stmp->Delete();
+  // // bounds->SetOutlineProperties(0.076, NULL, cdr->CreateCMYKColor(100, 50, 0,
+  // // 0), NULL, NULL, cdrUndefined,  cdrUndefined, cdrOutlineUndefinedLineCaps,
+  // // cdrOutlineUndefinedLineJoin, NULL, NULL, NULL, NULL, NULL);
+
+  // auto sbox = bounds->BreakApartEx();
+  // sbox->ApplyUniformFill(red);
+
+
   // 建立辅助的异性边界物件，需要填充颜色，搞了半天才搞定
   auto bounds = sr->CreateBoundary(0, 0, true, false); // 建立异性边界物件
   bounds->Fill->UniformColor->RGBAssign(255, 0, 0);    // 填充红色
   auto sbox = bounds->BreakApartEx(); // 把边界 拆分为多个边界 用来分组
 
+  if (sbox->Count > 2) {
+    //  VGCore::IVGShapeRange::Sort ( _bstr_t CompareExpression, long
+    //  StartIndex, long EndIndex, const _variant_t & Data );
+    sbox->Sort(
+      _bstr_t(
+            "@shape1.width * @shape1.height > @shape2.width * @shape2.height"),
+        1, sbox->Count, _variant_t());
+  }
 
   // 删除文字添加的方框
   if (sr_text->Count > 0) {
@@ -98,7 +125,7 @@ bool BoundaryGroup(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs) {
   // 按照边界框异形范围进行分组群组
   auto srgp = cdr->CreateShapeRange();
 
-  for (int k = 0; k < sbox->Count; k++) {
+  for (int k = 0; k < sbox->Count && sr->Count; k++) {
     sbox->Shapes->Item[k + 1]->GET_BOUNDING_BOX(bound_box);
 
     for (int i = 0; i < sr->Count; i++) {
@@ -114,14 +141,20 @@ bool BoundaryGroup(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs) {
           srgp->Add(sh);
       }
     }
+
     // 从Range中移除已分组的图形
     sr->RemoveRange(srgp);
-    srs->Add(srgp->Group());
+    if (srgp->Count > 1) {
+      srs->Add(srgp->Group());
+    } else {
+      srs->AddRange(srgp);
+    }
     srgp->RemoveAll();
   }
 
   // 删除辅助的异性边界物件
-  sbox->Delete();
+  if(!debug_flg)
+    sbox->Delete();
   return true;
 }
 
@@ -146,7 +179,7 @@ void run_BoundaryGroup(corel *cdr) {
 
   if (cnt > 300) {
     // 调用矩形分组，分布执行异形群组
-    if (BoxGrouping(cdr, sr, sr_box, 1.0)) {
+    if (BoxGrouping(cdr, sr, sr_box, 0.1)) {
       for (int i = 0; i < sr_box->Count; i++) {
         auto s = sr_box->Shapes->Item[i + 1];
         if (!s->IsSimpleShape) {

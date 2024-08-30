@@ -226,7 +226,7 @@ bool BoxGrouping(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs, double exp )
   std::map<int, std::vector<int>> groups;
   for (int i = 0; i < parent.size(); i++) {
     int root = find(parent, i);
-    groups[root].push_back(i + 1); // CorelDRAW Shapes 物件 Item 编号从1开始
+    groups[root].push_back(i + 1);
   }
 
   auto srgp = cdr->CreateShapeRange();
@@ -237,9 +237,9 @@ bool BoxGrouping(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs, double exp )
       
       if(sr->Count >1)
         srs->Add(srgp->Group());
-      else
-        srs->AddRange(srgp);  
-
+      else{
+        srs->AddRange(srgp); 
+      }
       srgp->RemoveAll();
   }
   return true;

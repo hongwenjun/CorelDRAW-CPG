@@ -1,4 +1,4 @@
-#ifndef CDRAPP_H_INCLUDED
+﻿#ifndef CDRAPP_H_INCLUDED
 #define CDRAPP_H_INCLUDED
 #include "cdrapi.h"
 
@@ -22,6 +22,7 @@ void run_BoundaryGroup(corel *cdr);
 
 
 extern char infobuf[];
+extern bool debug_flg;
 
 #define GET_BOUNDING_BOX(box)                                                  \
   GetBoundingBox(&(box).x, &(box).y, &(box).w, &(box).h, false)
