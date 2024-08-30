@@ -1,4 +1,5 @@
-﻿#include "cdrapp.h"
+﻿#include "cdrapi.h"
+#include "cdrapp.h"
 #include <stdio.h>
 #include <windows.h>
 #include "resource.h"
@@ -275,6 +276,7 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 
         } catch (_com_error &e) {
             MessageBox(NULL, e.Description(), "Error", MB_ICONSTOP);
+            EndOpt(cdr);
         }
 
     } else if (uMsg == WM_INITDIALOG) {

@@ -1,4 +1,6 @@
 ﻿#include "cdrapp.h"
+#include <cerrno>
+#include <cmath>
 
 bool isDPCurve(IVGShapePtr s) {
   auto dpc = (s->Type == cdrRectangleShape) || (s->Type == cdrEllipseShape) ||
@@ -69,7 +71,8 @@ bool BoundaryGroup(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs) {
 
   // 处理文字和影响的物件
   auto txtbox = cdr->CreateShapeRange();
-  auto sr_text = sr->Shapes->FindShapes(_bstr_t(), cdrTextShape, VARIANT_TRUE, _bstr_t());
+  auto sr_text =
+      sr->Shapes->FindShapes(_bstr_t(), cdrTextShape, VARIANT_TRUE, _bstr_t());
   if (sr_text->Count > 0) {
     auto al = cdr->ActiveLayer;
     for (auto i = 0; i != sr_text->Count; i++) {
@@ -84,6 +87,7 @@ bool BoundaryGroup(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs) {
   auto bounds = sr->CreateBoundary(0, 0, true, false); // 建立异性边界物件
   bounds->Fill->UniformColor->RGBAssign(255, 0, 0);    // 填充红色
   auto sbox = bounds->BreakApartEx(); // 把边界 拆分为多个边界 用来分组
+
 
   // 删除文字添加的方框
   if (sr_text->Count > 0) {
@@ -124,14 +128,37 @@ bool BoundaryGroup(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs) {
 // 测试运行 异形群组
 void run_BoundaryGroup(corel *cdr) {
   auto start = std::chrono::high_resolution_clock::now(); // 开始时间
+  if (cdr->VersionMajor < 17) {
+    sprintf(infobuf, "异形群组目前只支持X7以上版本！");
+    return;
+  }
+
   BeginOpt(cdr);
 
   auto sr = cdr->ActiveSelectionRange;
   auto srs = cdr->CreateShapeRange();
+  auto sr_box = cdr->CreateShapeRange();
+
   int cnt = sr->Count;
 
+  // 取消选择,速度优化
   cdr->ActiveDocument->ClearSelection();
-  BoundaryGroup(cdr, sr, srs);
+
+  if (cnt > 300) {
+    // 调用矩形分组，分布执行异形群组
+    if (BoxGrouping(cdr, sr, sr_box, 1.0)) {
+      for (int i = 0; i < sr_box->Count; i++) {
+        auto s = sr_box->Shapes->Item[i + 1];
+        if (!s->IsSimpleShape) {
+          auto sr2 = s->UngroupEx();
+          BoundaryGroup(cdr, sr2, srs);
+        }
+      }
+    }
+  } else {
+    BoundaryGroup(cdr, sr, srs);
+  }
+
   srs->CreateSelection();
 
   // 计算持续时间

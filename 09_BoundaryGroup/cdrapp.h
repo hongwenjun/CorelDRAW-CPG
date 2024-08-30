@@ -34,7 +34,8 @@ typedef struct {
   double w; 
   double h; 
 } BoundingBox;
-bool isOverlapped(const BoundingBox &a, const BoundingBox &b);
 
+bool isOverlapped(const BoundingBox &a, const BoundingBox &b);
+bool BoxGrouping(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs, double exp );
 
 #endif // CDRAPP_H_INCLUDED

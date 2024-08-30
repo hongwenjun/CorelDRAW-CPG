@@ -191,3 +191,56 @@ bool Box_AutoGroup(corel *cdr, double exp) {
   EndOpt(cdr);
   return true;
 }
+
+// 按矩形框范围分组，供其他功能调用 
+bool BoxGrouping(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs, double exp ) {
+  BoundingBox box;
+  auto al = cdr->ActiveLayer;          // 获得当前层
+  if (!sr || !al) return false;
+
+  std::vector<BoundingBox> boxes;
+  std::vector<int> parent;
+
+  // CorelDRAW Shapes 物件 Item 编号从1开始
+  for (auto i = 0; i != sr->Count; i++) {
+    sr->Shapes->Item[i + 1]->GET_BOUNDING_BOX(box);
+    boxes.push_back(box);
+    parent.push_back(i);
+  }
+
+  // 扩展边界框，或者收缩边界框
+  if (fabs(exp) > 0.02 ) {
+    expand_bounding_boxes(boxes, exp);
+  }
+
+  // 实现 Union-Find 算法来合并重叠的区域
+  for (int i = 0; i < boxes.size(); i++) {
+    for (int j = i + 1; j < boxes.size(); j++) {
+      if (isOverlapped(boxes[i], boxes[j])) {
+        unionSet(parent, i, j);
+      }
+    }
+  }
+
+  // 输出分组结果
+  std::map<int, std::vector<int>> groups;
+  for (int i = 0; i < parent.size(); i++) {
+    int root = find(parent, i);
+    groups[root].push_back(i + 1); // CorelDRAW Shapes 物件 Item 编号从1开始
+  }
+
+  auto srgp = cdr->CreateShapeRange();
+  // 分组分别进行群组
+  for (const auto& group : groups) {
+      for (int index : group.second) 
+        srgp->Add(sr->Shapes->Item[index]);
+      
+      if(sr->Count >1)
+        srs->Add(srgp->Group());
+      else
+        srs->AddRange(srgp);  
+
+      srgp->RemoveAll();
+  }
+  return true;
+}
