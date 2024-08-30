@@ -1,16 +1,5 @@
 ﻿#include "cdrapp.h"
 
-#define GET_BOUNDING_BOX(box)                                                  \
-  GetBoundingBox(&(box).x, &(box).y, &(box).w, &(box).h, false)
-
-#define ZERO_4PC 0, 0, 0, 0
-
-typedef struct {
-  double x; // 左下角 x 坐标
-  double y; // 左下角 y 坐标
-  double w; // 宽度
-  double h; // 高度
-} BoundingBox;
 bool isDPCurve(IVGShapePtr s) {
   auto dpc = (s->Type == cdrRectangleShape) || (s->Type == cdrEllipseShape) ||
              (s->Type == cdrCurveShape) || (s->Type == cdrPolygonShape) ||
@@ -18,6 +7,7 @@ bool isDPCurve(IVGShapePtr s) {
   return dpc;
 }
 IVGShapePtr CreateBoundary(corel *cdr, IVGShapePtr s) {
+
   auto scp = s->CreateBoundary(0, 0, true, false);
 
   //  这个 API X7 以上才支持，所以现在直接画矩形
@@ -59,9 +49,9 @@ bool isIntWith(corel *cdr, IVGShape *s1, IVGShape *s2) {
 }
 
 // 从矩形边界坐标 获得中心坐标
-void calculate_center(const BoundingBox *box, double *cx, double *cy) {
-  *cx = box->x + (box->w / 2);
-  *cy = box->y + (box->h / 2);
+void calculate_center(const BoundingBox &box, double &cx, double &cy) {
+  cx = box.x + (box.w / 2);
+  cy = box.y + (box.h / 2);
 }
 
 // VGCore::cdrPositionOfPointOverShape VGCore::IVGShape::IsOnShape ( double x,
@@ -73,28 +63,51 @@ bool BoundaryGroup(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs) {
   if (sr->Count < 2)
     return false;
 
-  BoundingBox box;
+  BoundingBox box, bound_box;
   double x, y;
   int OnSh = 0;
+
+  // 处理文字和影响的物件
+  auto txtbox = cdr->CreateShapeRange();
+  auto sr_text = sr->Shapes->FindShapes(_bstr_t(), cdrTextShape, VARIANT_TRUE, _bstr_t());
+  if (sr_text->Count > 0) {
+    auto al = cdr->ActiveLayer;
+    for (auto i = 0; i != sr_text->Count; i++) {
+      sr_text->Shapes->Item[i + 1]->GET_BOUNDING_BOX(box);
+      auto s = al->CreateRectangle2(box.x, box.y, box.w, box.h, ZERO_4PC);
+      txtbox->Add(s);
+    }
+    sr->AddRange(txtbox);
+  }
+
+  // 建立辅助的异性边界物件，需要填充颜色，搞了半天才搞定
   auto bounds = sr->CreateBoundary(0, 0, true, false); // 建立异性边界物件
   bounds->Fill->UniformColor->RGBAssign(255, 0, 0);    // 填充红色
-
   auto sbox = bounds->BreakApartEx(); // 把边界 拆分为多个边界 用来分组
 
+  // 删除文字添加的方框
+  if (sr_text->Count > 0) {
+    sr->RemoveRange(txtbox);
+    txtbox->Delete();
+  }
+
+  // 按照边界框异形范围进行分组群组
   auto srgp = cdr->CreateShapeRange();
 
   for (int k = 0; k < sbox->Count; k++) {
+    sbox->Shapes->Item[k + 1]->GET_BOUNDING_BOX(bound_box);
 
     for (int i = 0; i < sr->Count; i++) {
       auto sh = sr->Shapes->Item[i + 1];
-      sh->GET_BOUNDING_BOX(box);      // 获得物件矩形边界坐标
-      calculate_center(&box, &x, &y); // 获得物件中心坐标
+      sh->GET_BOUNDING_BOX(box);   // 获得物件矩形边界坐标
+      calculate_center(box, x, y); // 获得物件中心坐标
       OnSh = sbox->Shapes->Item[k + 1]->IsOnShape(x, y, -1);
 
       if (OnSh) {
         srgp->Add(sh);
-      } else if (isIntWith(cdr, sbox->Shapes->Item[k + 1], sh)) {
-        srgp->Add(sh);
+      } else if (isOverlapped(box, bound_box)) {
+        if (isIntWith(cdr, sbox->Shapes->Item[k + 1], sh))
+          srgp->Add(sh);
       }
     }
     // 从Range中移除已分组的图形
@@ -102,8 +115,9 @@ bool BoundaryGroup(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs) {
     srs->Add(srgp->Group());
     srgp->RemoveAll();
   }
+
+  // 删除辅助的异性边界物件
   sbox->Delete();
-  
   return true;
 }
 

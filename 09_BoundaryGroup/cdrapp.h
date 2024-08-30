@@ -19,6 +19,22 @@ bool BBox_DrawRectangle(corel *cdr, double exp = 0.0);
 
 void run_BoundaryGroup(corel *cdr);
 
+
+
 extern char infobuf[];
+
+#define GET_BOUNDING_BOX(box)                                                  \
+  GetBoundingBox(&(box).x, &(box).y, &(box).w, &(box).h, false)
+
+#define ZERO_4PC 0, 0, 0, 0
+ // 左下角坐标 x,y  w,h 宽高
+typedef struct {
+  double x;
+  double y; 
+  double w; 
+  double h; 
+} BoundingBox;
+bool isOverlapped(const BoundingBox &a, const BoundingBox &b);
+
 
 #endif // CDRAPP_H_INCLUDED

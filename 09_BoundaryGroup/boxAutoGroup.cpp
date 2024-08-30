@@ -1,17 +1,5 @@
 ﻿#include "cdrapp.h"
 
-#define GET_BOUNDING_BOX(box)                                                  \
-  GetBoundingBox(&(box).x, &(box).y, &(box).w, &(box).h, false)
-
-#define ZERO_4PC 0, 0, 0, 0
-
-typedef struct {
-  double x; // 左下角 x 坐标
-  double y; // 左下角 y 坐标
-  double w; // 宽度
-  double h; // 高度
-} BoundingBox;
-
 // 扩展边界框
 void expand_bounding_boxes(std::vector<BoundingBox>& boxes, double exp) {
     for (auto& box : boxes) {
