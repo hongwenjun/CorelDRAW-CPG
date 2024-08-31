@@ -10,15 +10,15 @@ bool isDPCurve(IVGShapePtr s) {
   return dpc;
 }
 IVGShapePtr CreateBoundary(corel *cdr, IVGShapePtr s) {
-
-  auto scp = s->CreateBoundary(0, 0, true, false);
-
-  //  这个 API X7 以上才支持，所以现在直接画矩形
-  // BoundingBox box;
-  // s->GET_BOUNDING_BOX(box);
-  // auto scp = cdr->ActiveLayer->CreateRectangle2(box.x, box.y, box.w, box.h,
-  // ZERO_4PC);
-
+  IVGShapePtr scp;
+  if (cdr->VersionMajor < 17) {
+    s->CreateSelection();
+    cdr->FrameWork->Automation->InvokeItem( _bstr_t("b0491566-5ffe-450a-b17e-f2f496b4eb22"));
+    scp = cdr->ActiveSelectionRange->Shapes->Item[1];
+  } else {
+    //  这个 API X7 以上才支持，所以现在直接画矩形
+    scp = s->CreateBoundary(0, 0, true, false);    
+  }
   return scp;
 }
 
@@ -103,17 +103,23 @@ bool BoundaryGroup(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs) {
 
 
   // 建立辅助的异性边界物件，需要填充颜色，搞了半天才搞定
-  auto bounds = sr->CreateBoundary(0, 0, true, false); // 建立异性边界物件
-  bounds->Fill->UniformColor->RGBAssign(255, 0, 0);    // 填充红色
+  IVGShapePtr bounds;
+  if (cdr->VersionMajor < 17) {
+    sr->CreateSelection();
+    cdr->FrameWork->Automation->InvokeItem( _bstr_t("b0491566-5ffe-450a-b17e-f2f496b4eb22"));
+    bounds = cdr->ActiveSelectionRange->Shapes->Item[1];
+    bounds->OrderToFront();
+  } else {
+    bounds = sr->CreateBoundary(0, 0, true, false); // 建立异性边界物件  
+  }
+
+  bounds->Fill->UniformColor->RGBAssign(255, 0, 0);
   auto sbox = bounds->BreakApartEx(); // 把边界 拆分为多个边界 用来分组
 
   if (sbox->Count > 2) {
     //  VGCore::IVGShapeRange::Sort ( _bstr_t CompareExpression, long
     //  StartIndex, long EndIndex, const _variant_t & Data );
-    sbox->Sort(
-      _bstr_t(
-            "@shape1.width * @shape1.height > @shape2.width * @shape2.height"),
-        1, sbox->Count, _variant_t());
+    sbox->Sort(bstr_t( "@shape1.width * @shape1.height > @shape2.width * @shape2.height"),  1, sbox->Count, _variant_t());
   }
 
   // 删除文字添加的方框
@@ -161,10 +167,8 @@ bool BoundaryGroup(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs) {
 // 测试运行 异形群组
 void run_BoundaryGroup(corel *cdr) {
   auto start = std::chrono::high_resolution_clock::now(); // 开始时间
-  if (cdr->VersionMajor < 17) {
-    sprintf(infobuf, "异形群组目前只支持X7以上版本！");
-    return;
-  }
+  // if (cdr->VersionMajor < 17) {
+  //   sprintf(infobuf, "异形群组目前只支持X7以上版本！");  return; }
 
   BeginOpt(cdr);
 
@@ -178,7 +182,7 @@ void run_BoundaryGroup(corel *cdr) {
   cdr->ActiveDocument->ClearSelection();
 
   if (cnt > 300) {
-    // 调用矩形分组，分布执行异形群组
+    // 调用矩形分组，分步执行异形群组
     if (BoxGrouping(cdr, sr, sr_box, 0.1)) {
       for (int i = 0; i < sr_box->Count; i++) {
         auto s = sr_box->Shapes->Item[i + 1];

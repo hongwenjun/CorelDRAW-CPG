@@ -48,11 +48,17 @@ try {
             Box_AutoGroup(cdr, x);
         break;
 
+        case 11:
+            run_BoundaryGroup(cdr);
+        break;
+
+
         default:
             return 0;
     }
 } catch (_com_error &e) {
     MessageBox(NULL, e.Description(), "Error", MB_ICONSTOP);
+    EndOpt(cdr);
 }
     return code;
 }

@@ -48,3 +48,7 @@ Sub Box_AutoGroup()
  ret = vbadll(10, -2#)
 End Sub
 
+'// 第11号功能: 异形群组功能
+Sub BoundaryGroup()
+ ret = vbadll(11, 0)
+End Sub
