@@ -1,5 +1,9 @@
 Attribute VB_Name = "VbaCallCPG"
-Private Declare PtrSafe Function vbadll Lib "lycpg64.cpg" (ByVal code As Long, ByVal x As Double) As Long
+#If VBA7 Then
+  Private Declare PtrSafe Function vbadll Lib "lycpg64.cpg" (ByVal code As Long, ByVal x As Double) As Long
+#Else
+  Private Declare Function vbadll Lib "lycpg32.cpg" (ByVal code As Long, ByVal x As Double) As Long
+#End If
 
 Sub VBA调用CPG_CDR复制物件到AI()
  ret = vbadll(2, 0)
@@ -40,12 +44,12 @@ End Sub
 
 '// 第9号功能: 按边界批量绘制矩形  参数:正数向外，负数向内
 Sub BBox_DrawRectangle()
- ret = vbadll(9, -2#)
+ ret = vbadll(9, 0#)
 End Sub
 
 '// 第10号功能: 智能群组功能  参数:正数 向外容差  负数 向内容差
 Sub Box_AutoGroup()
- ret = vbadll(10, -2#)
+ ret = vbadll(10, 1#)
 End Sub
 
 '// 第11号功能: 异形群组功能

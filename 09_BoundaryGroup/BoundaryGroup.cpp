@@ -12,9 +12,12 @@ bool isDPCurve(IVGShapePtr s) {
 IVGShapePtr CreateBoundary(corel *cdr, IVGShapePtr s) {
   IVGShapePtr scp;
   if (cdr->VersionMajor < 17) {
-    s->CreateSelection();
-    cdr->FrameWork->Automation->InvokeItem( _bstr_t("b0491566-5ffe-450a-b17e-f2f496b4eb22"));
-    scp = cdr->ActiveSelectionRange->Shapes->Item[1];
+    // s->CreateSelection();
+    // cdr->FrameWork->Automation->InvokeItem( _bstr_t("b0491566-5ffe-450a-b17e-f2f496b4eb22"));
+    // scp = cdr->ActiveSelectionRange->Shapes->Item[1];
+    BoundingBox box;
+    s->GET_BOUNDING_BOX(box);
+    scp = cdr->ActiveLayer->CreateRectangle2(box.x, box.y, box.w, box.h, ZERO_4PC);
   } else {
     //  这个 API X7 以上才支持，所以现在直接画矩形
     scp = s->CreateBoundary(0, 0, true, false);    
@@ -22,11 +25,9 @@ IVGShapePtr CreateBoundary(corel *cdr, IVGShapePtr s) {
   return scp;
 }
 
-// VGCore::IVGShapePtr VGCore::IVGShape::CreateBoundary ( double x, double y,
-// VARIANT_BOOL PlaceOnTop, VARIANT_BOOL DeleteSource ); VGCore::IVGShapePtr
-// VGCore::IVGShapeRange::CreateBoundary ( double x, double y, VARIANT_BOOL
-// PlaceOnTop, VARIANT_BOOL DeleteSource ); VARIANT_BOOL
-// VGCore::IVGCurve::IntersectsWith ( struct IVGCurve * Curve )
+// VGCore::IVGShapePtr VGCore::IVGShape::CreateBoundary ( double x, double y, VARIANT_BOOL PlaceOnTop, VARIANT_BOOL DeleteSource ); VGCore::IVGShapePtr
+// VGCore::IVGShapeRange::CreateBoundary ( double x, double y, VARIANT_BOOL PlaceOnTop, VARIANT_BOOL DeleteSource );
+// VARIANT_BOOL VGCore::IVGCurve::IntersectsWith ( struct IVGCurve * Curve )
 bool isIntWith(corel *cdr, IVGShape *s1, IVGShape *s2) {
   bool isIn = false;
   if (isDPCurve(s1) && isDPCurve(s2)) {
@@ -58,9 +59,8 @@ void calculate_center(const BoundingBox &box, double &cx, double &cy) {
   cy = box.y + (box.h / 2);
 }
 
-// VGCore::cdrPositionOfPointOverShape VGCore::IVGShape::IsOnShape ( double x,
-// double y, double HotArea ); VGCore::cdrPositionOfPointOverShape
-// VGCore::IVGCurve::IsOnCurve ( double x, double y, double HotArea );
+// VGCore::cdrPositionOfPointOverShape VGCore::IVGShape::IsOnShape ( double x, double y, double HotArea );
+// VGCore::cdrPositionOfPointOverShape VGCore::IVGCurve::IsOnCurve ( double x, double y, double HotArea );
 
 bool BoundaryGroup(corel *cdr, IVGShapeRange *sr, IVGShapeRange *srs) {
 
@@ -204,7 +204,6 @@ void run_BoundaryGroup(corel *cdr) {
   std::chrono::duration<double> duration = end - start;
   runtime = duration.count();
 
-  sprintf(infobuf, "选择物件: %d 个进行异形群组\n群组: %d 组, 时间: %.2f秒",
-          cnt, srs->Count, runtime);
+  sprintf(infobuf, "选择物件: %d 个进行异形群组\n群组: %d 组, 时间: %.2f秒", cnt, srs->Count, runtime);
   EndOpt(cdr);
 }

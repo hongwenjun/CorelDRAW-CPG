@@ -20,14 +20,12 @@ class ToolsBoxPlugin : public VGCore::IVGAppPlugin {
 private:
   volatile ULONG m_ulRefCount;
   long m_lCookie;
-
-  static intptr_t CALLBACK DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam,
-                                   LPARAM lParam);
-  void OpenToolsBox();
+  static intptr_t CALLBACK DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 public:
   ToolsBoxPlugin();
   VGCore::IVGApplication *m_pApp;
+  void OpenToolsBox();
 
   // IUnknown
 public:
@@ -52,9 +50,7 @@ public:
     return E_NOTIMPL;
   }
   STDMETHOD(Invoke)
-  (DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags,
-   DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo,
-   UINT *puArgErr);
+  (DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr);
 
   // IVGAppPlugin
 public:
@@ -86,10 +82,7 @@ STDMETHODIMP ToolsBoxPlugin::QueryInterface(REFIID riid, void **ppvObject) {
   return hr;
 }
 
-STDMETHODIMP ToolsBoxPlugin::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,
-                                    WORD wFlags, DISPPARAMS *pDispParams,
-                                    VARIANT *pVarResult, EXCEPINFO *pExcepInfo,
-                                    UINT *puArgErr) {
+STDMETHODIMP ToolsBoxPlugin::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr) {
   switch (dispIdMember) {
 
   case 0x0014: // DISPID_APP_ONPLUGINCMD
@@ -128,14 +121,9 @@ STDMETHODIMP ToolsBoxPlugin::raw_StartSession() {
   cdr = m_pApp;
 
   try {
-    m_pApp->AddPluginCommand(_bstr_t("OpenToolsBox"), _bstr_t("Tools Box"),
-                             _bstr_t("打开工具窗口"));
+    m_pApp->AddPluginCommand(_bstr_t("OpenToolsBox"), _bstr_t("Tools Box"), _bstr_t("打开工具窗口"));
 
-    VGCore::ICUIControlPtr ctl =
-        m_pApp->CommandBars->Item[_bstr_t("Standard")]
-            ->Controls->AddCustomButton(VGCore::cdrCmdCategoryPlugins,
-                                        _bstr_t("OpenToolsBox"), 10,
-                                        VARIANT_FALSE);
+    VGCore::ICUIControlPtr ctl = m_pApp->CommandBars->Item[_bstr_t("Standard")]->Controls->AddCustomButton(VGCore::cdrCmdCategoryPlugins, _bstr_t("OpenToolsBox"), 10, VARIANT_FALSE);
     ctl->SetIcon2(_bstr_t("guid://d2fdc0d9-09f8-4948-944c-4297395c05b7"));
     m_lCookie = m_pApp->AdviseEvents(this);
   } catch (_com_error &e) {
@@ -169,8 +157,7 @@ void ToolsBoxPlugin::OpenToolsBox() {
   HWND hAppWnd = reinterpret_cast<HWND>(nHandle);
 
   // 创建非模态对话框
-  HWND hDlgWnd = CreateDialogParam(g_hResource, MAKEINTRESOURCE(IDD_TOOLS_BOX),
-                                   hAppWnd, DlgProc, (LPARAM)m_pApp);
+  HWND hDlgWnd = CreateDialogParam(g_hResource, MAKEINTRESOURCE(IDD_TOOLS_BOX), hAppWnd, DlgProc, (LPARAM)m_pApp);
   // 在创建对话框之前存储 m_pApp 指针
   SetWindowLongPtr(hDlgWnd, DWLP_USER, (LONG_PTR)m_pApp);
 
@@ -198,13 +185,11 @@ void ToolsBoxPlugin::OpenToolsBox() {
   ShowWindow(hDlgWnd, SW_SHOW);
 }
 
-// MessageBox(NULL, "更新提示信息: 激活CorelDRAW窗口", "CPG代码测试",
-// MB_ICONSTOP);
+// MessageBox(NULL, "更新提示信息: 激活CorelDRAW窗口", "CPG代码测试", MB_ICONSTOP);
 #define UPDATE_INFO_ACTIVE_CDRWND                                              \
   PutTextValue(hDlg, INFO_TEXT, infobuf);                                      \
   Active_CorelWindows(hDlg);
-intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam,
-                                          LPARAM lParam) {
+intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
   // 从附加数据中获取 m_pApp 指针
   VGCore::IVGApplication *cdr = reinterpret_cast<VGCore::IVGApplication *>(
       GetWindowLongPtr(hDlg, DWLP_USER));
@@ -261,21 +246,17 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam,
 
       case IDC_SR_FLIP:
         Shapes_Filp(cdr);
-        break;
+      break;
 
       case IDC_CDR2AI: {
         CdrCopy_to_AdobeAI(cdr);
-        sprintf(infobuf,
-                "把CorelDRAW软件中选择物件复制到剪贴板，请切换到AI软件粘贴");
+        sprintf(infobuf, "把CorelDRAW软件中选择物件复制到剪贴板，请切换到AI软件粘贴");
         UPDATE_INFO_ACTIVE_CDRWND
-      }
-
-      break;
+      } break;
 
       case IDC_AI2CDR: {
         AdobeAI_Copy_ImportCdr(cdr);
-        sprintf(infobuf,
-                "请先在AI软件选择物件复制，再切换到CorelDRAW软件点执行本功能");
+        sprintf(infobuf, "请先在AI软件选择物件复制，再切换到CorelDRAW软件点执行本功能");
         UPDATE_INFO_ACTIVE_CDRWND
       } break;
 
@@ -319,8 +300,7 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam,
   return 0;
 }
 
-extern "C" __declspec(dllexport) DWORD APIENTRY
-    AttachPlugin(VGCore::IVGAppPlugin **ppIPlugin) {
+extern "C" __declspec(dllexport) DWORD APIENTRY AttachPlugin(VGCore::IVGAppPlugin **ppIPlugin) {
   *ppIPlugin = new ToolsBoxPlugin;
   return 0x100;
 }

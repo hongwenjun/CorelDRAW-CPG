@@ -12,7 +12,7 @@ bool pdf_to_clipboard(const char *pdffile)
 {
     // 打开剪贴板
     if (!OpenClipboard(NULL)) {
-        printf("Failed to open clipboard.\n");
+        // printf("Failed to open clipboard.\n");
         return false;
     }
 
@@ -22,7 +22,7 @@ bool pdf_to_clipboard(const char *pdffile)
     // 读取PDF文件到内存
     FILE *file = fopen(pdffile, "rb");
     if (!file) {
-        printf("Failed to open file.\n");
+        // printf("Failed to open file.\n");
         CloseClipboard();
         return false;
     }
@@ -35,7 +35,7 @@ bool pdf_to_clipboard(const char *pdffile)
     // 分配内存并读取文件内容
     void *pdfData = malloc(fileSize);
     if (!pdfData) {
-        printf("Failed to allocate memory.\n");
+        // printf("Failed to allocate memory.\n");
         fclose(file);
         CloseClipboard();
         return false;
@@ -47,7 +47,7 @@ bool pdf_to_clipboard(const char *pdffile)
     // 将二进制数据写入剪贴板
     HGLOBAL hGlobal = GlobalAlloc(GHND, fileSize);
     if (!hGlobal) {
-        printf("Failed to allocate global memory.\n");
+        // printf("Failed to allocate global memory.\n");
         free(pdfData);
         CloseClipboard();
         return false;
@@ -57,7 +57,7 @@ bool pdf_to_clipboard(const char *pdffile)
     GlobalUnlock(hGlobal);
 
     if (!SetClipboardData(CUSTOM_FORMAT, hGlobal)) {
-        printf("Failed to set clipboard data.\n");
+        // printf("Failed to set clipboard data.\n");
         GlobalFree(hGlobal);
         free(pdfData);
         CloseClipboard();
@@ -66,7 +66,7 @@ bool pdf_to_clipboard(const char *pdffile)
     // 关闭剪贴板
     CloseClipboard();
 
-    printf("PDF binary data copied to clipboard using custom format.\n");
+    // printf("PDF binary data copied to clipboard using custom format.\n");
     // 不要忘记释放内存
     free(pdfData);
     return true;
@@ -76,14 +76,14 @@ bool clipboard_to_pdf(const char *outputFile)
 {
     // 打开剪贴板
     if (!OpenClipboard(NULL)) {
-        printf("Failed to open clipboard.\n");
+        // printf("Failed to open clipboard.\n");
         return false;
     }
 
     // 获取剪贴板中的PDF数据
     HANDLE hData = GetClipboardData(CUSTOM_FORMAT);
     if (!hData) {
-        printf("Failed to get clipboard data.\n");
+        // printf("Failed to get clipboard data.\n");
         CloseClipboard();
         return false;
     }
@@ -91,7 +91,7 @@ bool clipboard_to_pdf(const char *outputFile)
     // 锁定内存并获取指针
     void *pdfData = GlobalLock(hData);
     if (!pdfData) {
-        printf("Failed to lock global memory.\n");
+        // printf("Failed to lock global memory.\n");
         CloseClipboard();
         return false;
     }
@@ -102,7 +102,7 @@ bool clipboard_to_pdf(const char *outputFile)
     // 将PDF数据写入文件
     FILE *file = fopen(outputFile, "wb");
     if (!file) {
-        printf("Failed to open output file.\n");
+        // printf("Failed to open output file.\n");
         GlobalUnlock(hData);
         CloseClipboard();
         return false;
@@ -115,7 +115,7 @@ bool clipboard_to_pdf(const char *outputFile)
     GlobalUnlock(hData);
     CloseClipboard();
 
-    printf("PDF binary data from clipboard saved to file: %s\n", outputFile);
+    // printf("PDF binary data from clipboard saved to file: %s\n", outputFile);
 
     return true;
 }
@@ -161,8 +161,9 @@ bool pdf_ImportCdr(corel *cdr, const char *pdffile)
    auto si = cdr->CreateStructImportOptions();
    si->MaintainLayers = true;
    
-   auto impflt = cdr->ActiveLayer->ImportEx(_bstr_t(pdffile), cdrAutoSense , si);
+   auto impflt = cdr->ActiveLayer->ImportEx(_bstr_t(pdffile), cdrPDF , si);
    impflt->Finish();
+   return true;
 }
 
 void AdobeAI_Copy_ImportCdr(corel *cdr)
@@ -171,8 +172,8 @@ void AdobeAI_Copy_ImportCdr(corel *cdr)
     GetTempPath(MAX_PATH, path);
     char *f = strcat(path, "CDR2AI.pdf");
     if (clipboard_to_pdf(f)){
-        // 延时 0.3 秒
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        // 延时 0.5 秒
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
         pdf_ImportCdr(cdr, f);
     }
 
