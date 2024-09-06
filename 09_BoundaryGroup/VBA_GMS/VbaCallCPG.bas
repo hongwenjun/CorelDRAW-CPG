@@ -56,3 +56,7 @@ End Sub
 Sub BoundaryGroup()
  ret = vbadll(11, 0)
 End Sub
+
+Sub Open_LYCPG()
+ ret = vbadll(888, 8)
+End Sub

@@ -3,6 +3,7 @@
 #include "cdrapp.h"
 
 extern corel *cdr;
+void open_lycpg();
 extern "C" __declspec(dllexport)
 int __stdcall vbadll(int code, double x =0.0){
 
@@ -52,6 +53,9 @@ try {
             run_BoundaryGroup(cdr);
         break;
 
+        case 888:
+            open_lycpg();
+        break;
 
         default:
             return 0;

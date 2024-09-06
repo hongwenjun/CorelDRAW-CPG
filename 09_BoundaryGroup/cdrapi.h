@@ -11,6 +11,7 @@
 #include <fstream>
 #include <chrono>
 #include <math.h>
+#include "WinData.h"
 
 #import "VGCoreAuto.tlb" \
 rename("GetCommandLine", "VGGetCommandLine") \

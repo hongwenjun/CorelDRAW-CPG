@@ -7,6 +7,7 @@
 
 corel *cdr = NULL;
 static HINSTANCE g_hResource = NULL;
+HICON  g_hIcon;         // 窗口图标句柄
 bool debug_flg = false; // 调试->高级模式
 char infobuf[256] = {0};
 BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
@@ -116,9 +117,11 @@ STDMETHODIMP ToolsBoxPlugin::raw_OnLoad(VGCore::IVGApplication *Application) {
   return S_OK;
 }
 
+ToolsBoxPlugin* lycpg = nullptr;
 STDMETHODIMP ToolsBoxPlugin::raw_StartSession() {
   // 接口转交给cdr
   cdr = m_pApp;
+  lycpg = this;
 
   try {
     m_pApp->AddPluginCommand(_bstr_t("OpenToolsBox"), _bstr_t("Tools Box"), _bstr_t("打开工具窗口"));
@@ -170,19 +173,30 @@ void ToolsBoxPlugin::OpenToolsBox() {
   // 计算对话框窗口的宽度和高度
   RECT dlgRect;
   GetWindowRect(hDlgWnd, &dlgRect);
-  int dlgWidth = dlgRect.right - dlgRect.left;
-  int dlgHeight = dlgRect.bottom - dlgRect.top;
+  int w = dlgRect.right - dlgRect.left;
+  int h = dlgRect.bottom - dlgRect.top;
 
   // 计算对话框窗口的左上角坐标,使其居中显示
-  int x = (screenWidth - dlgWidth) / 2;
-  int y = (screenHeight - dlgHeight) / 2;
+  int x = (screenWidth - w) / 2;
+  int y = (screenHeight - h) / 2;
+
+  // 创建窗口数据实例      // 从文件加载
+  WinData win = {x, y, w, h};
+  win = loadWinData("window.dat", win);
 
   // 设置对话框窗口的位置
-  SetWindowPos(hDlgWnd, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+  SetWindowPos(hDlgWnd, NULL, win.x, win.y, win.w, win.h, SWP_NOZORDER | SWP_NOACTIVATE);
   // 设置对话框窗口的父窗口  // #define GWL_HWNDPARENT      (-8)
   SetWindowLong(hDlgWnd, -8, (LONG)hAppWnd);
+
   // 显示对话框窗口
   ShowWindow(hDlgWnd, SW_SHOW);
+
+  // 使用 g_hResource 作为 HINSTANCE
+  g_hIcon = ::LoadIcon(g_hResource, MAKEINTRESOURCE(IDI_ICON1));
+  // 小图标：就是窗口左上角对应的那个图标
+  ::SendMessage(hDlgWnd, WM_SETICON, ICON_SMALL, (LPARAM)g_hIcon);
+
 }
 
 // MessageBox(NULL, "更新提示信息: 激活CorelDRAW窗口", "CPG代码测试", MB_ICONSTOP);
@@ -260,6 +274,7 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
         UPDATE_INFO_ACTIVE_CDRWND
       } break;
 
+//////////// 窗口扩展、最小化、恢复按钮按钮////////////////////////////////////////////////
       case EXPAND_TOOLS: {
         // 获取当前窗口的句柄
         HWND hwnd = GetActiveWindow();
@@ -267,7 +282,7 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
         RECT rect;
         GetWindowRect(hwnd, &rect);
         // 计算新的宽度
-        int newWidth = rect.right - rect.left + 125; // 增加125单位
+        int newWidth = rect.right - rect.left + 100; // 增加100单位
         // 移动窗口到新的大小
         SetWindowPos(hwnd, NULL, rect.left, rect.top, newWidth, rect.bottom - rect.top, SWP_NOZORDER | SWP_NOACTIVATE);
         // 隐藏按钮 (假设按钮的句柄为 buttonHandle)
@@ -278,11 +293,38 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
         RECT rect;
         GetWindowRect(hDlg, &rect);
         int currentWidth = rect.right - rect.left;
-        int newHeight = 98; // 设置新的高度为
-        SetWindowPos(hDlg, NULL, rect.left, rect.top, currentWidth, newHeight, SWP_NOZORDER | SWP_NOACTIVATE);
+        int currentHeight = rect.bottom - rect.top;
+        int h = 98;
+        SetWindowPos(hDlg, NULL, rect.left, rect.top, currentWidth, h, SWP_NOZORDER | SWP_NOACTIVATE);
+        ShowWindow(::GetDlgItem(hDlg, MIN_TOOLS), SW_HIDE);
+        
+        int x = rect.left;
+        int y = rect.top;
+        int w = currentWidth;
+        // 保存窗口位置
+        WinData win = {x, y, w, h};
+        saveWinData("window.dat", &win);
+      } break;
+
+      case RENEW_TOOLS: {
+        RECT rect;
+        GetWindowRect(hDlg, &rect);
+        int x = rect.left;
+        int y = rect.top;
+        int h = 232; // 恢复宽高
+        int w = 207;
+        SetWindowPos(hDlg, NULL, x, y, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
+        ShowWindow(::GetDlgItem(hDlg, MIN_TOOLS), !SW_HIDE);
+        ShowWindow(::GetDlgItem(hDlg, EXPAND_TOOLS), !SW_HIDE);
+
+        // 保存窗口位置
+        WinData win = {x, y, w, h};
+        saveWinData("window.dat", &win);
+
       } break;
 
       case IDOK:
+        break;
       case IDCANCEL:
         EndDialog(hDlg, 0);
         break;
@@ -303,4 +345,10 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
 extern "C" __declspec(dllexport) DWORD APIENTRY AttachPlugin(VGCore::IVGAppPlugin **ppIPlugin) {
   *ppIPlugin = new ToolsBoxPlugin;
   return 0x100;
+}
+
+void open_lycpg() {
+    if (lycpg) {
+        lycpg->OpenToolsBox(); // 使用类的实例调用成员函数
+    }
 }

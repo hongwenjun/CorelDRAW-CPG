@@ -2,6 +2,7 @@
 #define CDRAPP_H_INCLUDED
 #include "cdrapi.h"
 
+
 bool fill_red(corel *cdr);
 bool cql_OutlineColor(corel *cdr);
 bool cql_FillColor(corel *cdr);

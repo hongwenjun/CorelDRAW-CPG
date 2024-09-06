@@ -4,7 +4,6 @@
 
 #define IDD_TOOLS_BOX                           100
 #define IDI_ICON1                               101
-#define EXPAND_TOOLS                            40015
 #define IDC_CQL_FILL                            40001
 #define IDC_CQL_OUTLINE                         40002
 #define IDC_CQL_SIZE                            40003
@@ -19,3 +18,5 @@
 #define ID_BOUNDARY_GROUP                       40012
 #define DEBUG_FLG                               40013
 #define MIN_TOOLS                               40014
+#define EXPAND_TOOLS                            40015
+#define RENEW_TOOLS                             40016
