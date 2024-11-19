@@ -126,8 +126,7 @@ STDMETHODIMP ToolsBoxPlugin::raw_StartSession() {
   try {
     m_pApp->AddPluginCommand(_bstr_t("OpenToolsBox"), _bstr_t("Tools Box"), _bstr_t("打开工具窗口"));
 
-    VGCore::ICUIControlPtr ctl = m_pApp->CommandBars->Item[_bstr_t("Standard")]->Controls->AddCustomButton(VGCore::cdrCmdCategoryPlugins, _bstr_t("OpenToolsBox"), 10, VARIANT_FALSE);
-    ctl->SetIcon2(_bstr_t("guid://d2fdc0d9-09f8-4948-944c-4297395c05b7"));
+
     m_lCookie = m_pApp->AdviseEvents(this);
   } catch (_com_error &e) {
     MessageBox(NULL, e.Description(), _bstr_t("Error"), MB_ICONSTOP);
@@ -282,7 +281,7 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
         RECT rect;
         GetWindowRect(hwnd, &rect);
         // 计算新的宽度
-        int newWidth = rect.right - rect.left + 120; // 增加120单位
+        int newWidth = rect.right - rect.left + 100; // 增加100单位
         // 移动窗口到新的大小
         SetWindowPos(hwnd, NULL, rect.left, rect.top, newWidth, rect.bottom - rect.top, SWP_NOZORDER | SWP_NOACTIVATE);
         // 隐藏按钮 (假设按钮的句柄为 buttonHandle)
@@ -311,8 +310,8 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
         GetWindowRect(hDlg, &rect);
         int x = rect.left;
         int y = rect.top;
-        int h = 235; // 恢复宽高
-        int w = 210;
+        int h = 232; // 恢复宽高
+        int w = 207;
         SetWindowPos(hDlg, NULL, x, y, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
         ShowWindow(::GetDlgItem(hDlg, MIN_TOOLS), !SW_HIDE);
         ShowWindow(::GetDlgItem(hDlg, EXPAND_TOOLS), !SW_HIDE);

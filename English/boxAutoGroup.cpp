@@ -60,8 +60,10 @@ bool BBox_DrawRectangle(corel *cdr, double exp) {
 
   cdr->ActiveDocument->LogCreateShapeRange(srs);  // 虚拟物件添加到文档中
   srs->CreateSelection();
-  
-  sprintf(infobuf, "提示: 标记画框数量: %d 个\n容差值请使用小键盘输入", srs->Count);
+
+  // sprintf(infobuf, "提示: 标记画框数量: %d 个\n容差值请使用小键盘输入", srs->Count);
+sprintf(infobuf, "Tip: Number of marked frames: %d\nPlease use the numeric keypad to enter the tolerance value", srs->Count);
+
   EndOpt(cdr);
   return true;
 }
@@ -189,7 +191,8 @@ bool Box_AutoGroup(corel *cdr, double exp) {
   duration = std::chrono::high_resolution_clock::now() - start;
   runtime[1] = duration.count();
 
-  sprintf(infobuf, "选择物件: %d 个, 分组: %.2f秒\n总共群组: %d 组, 总时间: %.2f秒", sr->Count, runtime[0] + 0.01, srs->Count, runtime[1] + 0.02);
+  // sprintf(infobuf, "选择物件: %d 个, 分组: %.2f秒\n总共群组: %d 组, 总时间: %.2f秒", sr->Count, runtime[0] + 0.01, srs->Count, runtime[1] + 0.02);
+  sprintf(infobuf, "Selected objects: %d, Grouping time: %.2f seconds\nTotal groups: %d, Total time: %.2f seconds", sr->Count, runtime[0] + 0.01, srs->Count, runtime[1] + 0.02);
   EndOpt(cdr);
   return true;
 }
