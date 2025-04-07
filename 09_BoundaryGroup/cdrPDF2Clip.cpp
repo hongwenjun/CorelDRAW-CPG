@@ -140,7 +140,7 @@ bool cdr_savepdf(corel *cdr, const char *outputFile)
     pdfst->SpotColors = cdrTrue;
     pdfst->Startup = pdfPageOnly;
     pdfst->SubsetFonts = cdrFalse;
-    pdfst->TextAsCurves = cdrFalse;
+    pdfst->TextAsCurves = cdrTrue;
     pdfst->Thumbnails = cdrFalse;
     cdr->ActiveDocument->PublishToPDF(_bstr_t(outputFile));
 

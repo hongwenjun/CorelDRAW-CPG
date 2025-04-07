@@ -9,6 +9,7 @@ typedef struct {
     int y;  // y 坐标
     int w;  // 宽度
     int h;  // 高度
+    double exp; // 容差值
 } WinData;
 
 // 函数声明

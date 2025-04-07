@@ -180,14 +180,21 @@ void ToolsBoxPlugin::OpenToolsBox() {
   int x = (screenWidth - w) / 2;
   int y = (screenHeight - h) / 2;
 
+  double exp = 0.0; // 默认初始容差值
+
   // 创建窗口数据实例      // 从文件加载
-  WinData win = {x, y, w, h};
+  WinData win = {x, y, w, h, exp};
   win = loadWinData("window.dat", win);
 
   // 设置对话框窗口的位置
   SetWindowPos(hDlgWnd, NULL, win.x, win.y, win.w, win.h, SWP_NOZORDER | SWP_NOACTIVATE);
   // 设置对话框窗口的父窗口  // #define GWL_HWNDPARENT      (-8)
   SetWindowLong(hDlgWnd, -8, (LONG)hAppWnd);
+
+  // 设置容差值 文本框的数值
+  char expbuf[64] = {0};
+  sprintf(expbuf, "%.1f", win.exp);
+  SetWindowText(::GetDlgItem(hDlgWnd, EXP_TEXT), expbuf); // 设置为需要的数值
 
   // 显示对话框窗口
   ShowWindow(hDlgWnd, SW_SHOW);
@@ -297,12 +304,13 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
         int h = 98;
         SetWindowPos(hDlg, NULL, rect.left, rect.top, currentWidth, h, SWP_NOZORDER | SWP_NOACTIVATE);
         ShowWindow(::GetDlgItem(hDlg, MIN_TOOLS), SW_HIDE);
-        
+        double exp = GetTextValue(hDlg, EXP_TEXT);
+
         int x = rect.left;
         int y = rect.top;
         int w = currentWidth;
         // 保存窗口位置
-        WinData win = {x, y, w, h};
+        WinData win = {x, y, w, h, exp};
         saveWinData("window.dat", &win);
       } break;
 
@@ -311,23 +319,40 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
         GetWindowRect(hDlg, &rect);
         int x = rect.left;
         int y = rect.top;
-        int h = 235; // 恢复宽高
-        int w = 210;
+        int h = 240; // 恢复宽高
+        int w = 220;
         SetWindowPos(hDlg, NULL, x, y, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
         ShowWindow(::GetDlgItem(hDlg, MIN_TOOLS), !SW_HIDE);
         ShowWindow(::GetDlgItem(hDlg, EXPAND_TOOLS), !SW_HIDE);
+        double exp = GetTextValue(hDlg, EXP_TEXT);
 
         // 保存窗口位置
-        WinData win = {x, y, w, h};
+        WinData win = {x, y, w, h, exp};
         saveWinData("window.dat", &win);
 
       } break;
 
       case IDOK:
         break;
-      case IDCANCEL:
+
+       // 关闭CPG插件，保存窗口位置
+      case IDCANCEL:{
+
+        RECT rect;
+        GetWindowRect(hDlg, &rect);
+        int w = rect.right - rect.left;
+        int h = rect.bottom - rect.top;
+        int x = rect.left;
+        int y = rect.top;
+        double exp = GetTextValue(hDlg, EXP_TEXT);
+
+        // 保存窗口位置
+        WinData win = {x, y, w, h, exp};
+        saveWinData("window.dat", &win);
+
         EndDialog(hDlg, 0);
-        break;
+      } break;
+
       }
 
     } catch (_com_error &e) {
