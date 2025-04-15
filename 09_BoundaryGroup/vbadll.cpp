@@ -34,7 +34,7 @@ try {
         break;
 
         case 7:
-            cql_SameSize(cdr);
+            cql_SameSize(cdr, x);
         break;
 
         case 8:

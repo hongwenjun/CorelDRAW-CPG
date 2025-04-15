@@ -28,14 +28,21 @@ void Active_CorelWindows(HWND hDlg)
 }
 
 double GetTextValue(HWND hDlg, int IDITEM) {
-    char ibuf[64];
-    memset(ibuf, 0, sizeof(ibuf));
-    GetWindowText(::GetDlgItem(hDlg, IDITEM), ibuf, sizeof(ibuf));
-    double exp = 0.0;
-    sscanf_s(ibuf, "%lf", &exp);
-    return exp;
-}
+  char ibuf[64];
+  memset(ibuf, 0, sizeof(ibuf));
 
+  // 获取文本
+  if (GetWindowText(::GetDlgItem(hDlg, IDITEM), ibuf, sizeof(ibuf)) == 0) {
+      return 0.0; 
+  }
+
+  double exp = 0.0;
+  if (sscanf_s(ibuf, "%lf", &exp) != 1) {
+      return 0.0; 
+  }
+
+  return exp;
+}
 void PutTextValue(HWND hDlg, int IDITEM, char *buf) {
   SetWindowText(::GetDlgItem(hDlg, IDITEM), buf);
 }

@@ -54,13 +54,14 @@ bool cql_FillColor(corel *cdr)
     return true;
 }
 
-bool cql_SameSize(corel *cdr)
+bool cql_SameSize(corel *cdr, double exp)
 {
     cdr->ActiveDocument->Unit = cdrMillimeter;
     auto s = cdr->ActiveShape;
 
+    exp += 0.01;
     char buf[256] = { 0 };
-    sprintf(buf, "@width = {%lf mm} and @height = {%lf mm}", s->SizeWidth, s->SizeHeight);
+    sprintf(buf, "(@com.SizeWidth - %lf).abs() <  %lf and (@com.SizeHeight - %lf).abs() <  %lf", s->SizeWidth, exp, s->SizeHeight, exp);
     auto cql = _bstr_t(buf);
 
     //  MessageBox(NULL, cql, "cql 尺寸相同", MB_ICONSTOP);

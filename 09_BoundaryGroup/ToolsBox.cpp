@@ -251,13 +251,13 @@ intptr_t CALLBACK ToolsBoxPlugin::DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, L
         UPDATE_INFO_ACTIVE_CDRWND
         break;
 
-      case IDC_CQL_SIZE:
-        cql_SameSize(cdr);
-
+      case IDC_CQL_SIZE: {
+        double exp = GetTextValue(hDlg, EXP_TEXT);
+        cql_SameSize(cdr, exp);
         UPDATE_INFO_ACTIVE_CDRWND
-        break;
+      } break;
 
-      case IDC_CLEAR_FILL: {
+      case IDC_DRAW_RECT: {
         double exp = GetTextValue(hDlg, EXP_TEXT);
         AutoMakeSelection(cdr);
         BBox_DrawRectangle(cdr, exp);

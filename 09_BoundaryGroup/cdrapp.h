@@ -6,7 +6,7 @@
 bool fill_red(corel *cdr);
 bool cql_OutlineColor(corel *cdr);
 bool cql_FillColor(corel *cdr);
-bool cql_SameSize(corel *cdr);
+bool cql_SameSize(corel *cdr, double exp);
 bool Shapes_Filp(corel *cdr);
 bool Shapes_Filp(corel *cdr);
 bool Clear_Fill(corel *cdr);
